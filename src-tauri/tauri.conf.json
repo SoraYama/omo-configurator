@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "identifier": "com.sorayama.omo-configurator",
   "build": {
-    "beforeDevCommand": "tnpm run dev",
+    "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "tnpm run build",
+    "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"
   },
   "plugins": {
