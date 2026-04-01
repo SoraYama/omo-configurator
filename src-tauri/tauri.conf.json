@@ -11,8 +11,7 @@
   },
   "plugins": {
     "fs": {
-      "requireLiteralLeadingDot": false,
-      "scope": ["$HOME/.config/opencode/**"]
+      "requireLiteralLeadingDot": false
     }
   },
   "app": {
