@@ -8,34 +8,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { ModelSelect } from "@/components/shared/ModelSelect";
 import { useConfig } from "@/context/ConfigContext";
-import { extractModelsFromProviders } from "@/lib/config";
 
 const VARIANTS = ["__none", "medium", "high", "xhigh", "max"];
 
 export function BatchModelBar() {
-  const { openCodeConfig, ohMyOpenCodeConfig, batchReplaceModel } = useConfig();
+  const { ohMyOpenCodeConfig, batchReplaceModel } = useConfig();
   const [fromModel, setFromModel] = useState("");
   const [toModel, setToModel] = useState("");
   const [toVariant, setToVariant] = useState("__none");
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const allModels = useMemo(() => {
-    if (!openCodeConfig?.providers) return [];
-    return extractModelsFromProviders(openCodeConfig.providers);
-  }, [openCodeConfig?.providers]);
-
+  /** 当前 agents/categories 中已在用的模型（去重），用作来源候选 */
   const currentModels = useMemo(() => {
     const models = new Set<string>();
-    if (ohMyOpenCodeConfig?.agents) {
-      for (const a of Object.values(ohMyOpenCodeConfig.agents)) {
-        models.add(a.model);
-      }
+    for (const a of Object.values(ohMyOpenCodeConfig?.agents ?? {})) {
+      if (a.model) models.add(a.model);
     }
-    if (ohMyOpenCodeConfig?.categories) {
-      for (const c of Object.values(ohMyOpenCodeConfig.categories)) {
-        models.add(c.model);
-      }
+    for (const c of Object.values(ohMyOpenCodeConfig?.categories ?? {})) {
+      if (c.model) models.add(c.model);
     }
     return Array.from(models).sort();
   }, [ohMyOpenCodeConfig]);
@@ -43,16 +35,12 @@ export function BatchModelBar() {
   const matchCount = useMemo(() => {
     if (!fromModel) return 0;
     let count = 0;
-    if (ohMyOpenCodeConfig?.agents) {
-      count += Object.values(ohMyOpenCodeConfig.agents).filter(
-        (a) => a.model === fromModel,
-      ).length;
-    }
-    if (ohMyOpenCodeConfig?.categories) {
-      count += Object.values(ohMyOpenCodeConfig.categories).filter(
-        (c) => c.model === fromModel,
-      ).length;
-    }
+    count += Object.values(ohMyOpenCodeConfig?.agents ?? {}).filter(
+      (a) => a.model === fromModel,
+    ).length;
+    count += Object.values(ohMyOpenCodeConfig?.categories ?? {}).filter(
+      (c) => c.model === fromModel,
+    ).length;
     return count;
   }, [fromModel, ohMyOpenCodeConfig]);
 
@@ -69,33 +57,24 @@ export function BatchModelBar() {
     <div className="flex items-center gap-3 rounded-lg border bg-muted/50 p-3">
       <span className="text-sm font-medium whitespace-nowrap">批量替换</span>
 
-      <Select value={fromModel || undefined} onValueChange={setFromModel}>
-        <SelectTrigger className="w-[240px]">
-          <SelectValue placeholder="来源模型" />
-        </SelectTrigger>
-        <SelectContent>
-          {currentModels.map((m) => (
-            <SelectItem key={m} value={m}>
-              {m}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {/* 来源：仅显示当前在用模型 */}
+      <ModelSelect
+        value={fromModel}
+        onValueChange={setFromModel}
+        placeholder="来源模型"
+        models={currentModels}
+        triggerClassName="w-[240px]"
+      />
 
       <span className="text-muted-foreground">→</span>
 
-      <Select value={toModel || undefined} onValueChange={setToModel}>
-        <SelectTrigger className="w-[240px]">
-          <SelectValue placeholder="目标模型" />
-        </SelectTrigger>
-        <SelectContent>
-          {allModels.map((m) => (
-            <SelectItem key={m} value={m}>
-              {m}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {/* 目标：显示全量可用模型 */}
+      <ModelSelect
+        value={toModel}
+        onValueChange={setToModel}
+        placeholder="目标模型"
+        triggerClassName="w-[240px]"
+      />
 
       <Select value={toVariant} onValueChange={setToVariant}>
         <SelectTrigger className="w-[100px]">

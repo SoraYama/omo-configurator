@@ -12,8 +12,15 @@ import { getOhMyOpenCodeVersion } from "@/lib/config";
 import type { ConfigFileType } from "@/types/config";
 
 export function TopBar() {
-  const { openCodeConfig, activeFile, setActiveFile, updatePluginVersion } =
-    useConfig();
+  const {
+    openCodeConfig,
+    activeFile,
+    setActiveFile,
+    updatePluginVersion,
+    externalModels,
+    authConfig,
+    refreshExternalModels,
+  } = useConfig();
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
 
@@ -25,7 +32,7 @@ export function TopBar() {
     setChecking(true);
     try {
       const res = await fetch(
-        "https://registry.npmjs.org/oh-my-opencode/latest",
+        "https://registry.npmjs.org/oh-my-openagent/latest",
       );
       const data = (await res.json()) as { version: string };
       setLatestVersion(data.version);
@@ -56,7 +63,7 @@ export function TopBar() {
             variant="outline"
             className="cursor-pointer text-orange-600 border-orange-300"
             onClick={() =>
-              updatePluginVersion("oh-my-opencode", latestVersion!)
+              updatePluginVersion("oh-my-openagent", latestVersion!)
             }
           >
             → v{latestVersion} 可更新，点击升级
@@ -64,6 +71,19 @@ export function TopBar() {
         )}
       </div>
       <div className="flex items-center gap-2">
+        {/* 已连接的外部 provider 及模型数量指示 */}
+        {authConfig && Object.keys(authConfig).length > 0 && (
+          <Badge
+            variant="secondary"
+            className="cursor-pointer text-xs"
+            title={`已连接: ${Object.keys(authConfig).join(", ")}`}
+            onClick={() => void refreshExternalModels()}
+          >
+            {externalModels.length > 0
+              ? `${externalModels.length} 个外部模型`
+              : "加载外部模型..."}
+          </Badge>
+        )}
         <Button
           variant="outline"
           size="sm"

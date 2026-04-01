@@ -15,7 +15,7 @@ export function McpList() {
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState("");
 
-  const mcpServers = openCodeConfig?.mcpServers ?? {};
+  const mcpServers = openCodeConfig?.mcp ?? {};
 
   const handleSave = (name: string, server: McpServer) => {
     updateMcpServer(name, server);

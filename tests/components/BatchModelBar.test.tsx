@@ -17,9 +17,9 @@ vi.mock("@/context/ConfigContext", () => ({
       categories: {},
     },
     openCodeConfig: {
-      providers: {
-        anthropic: { name: "anthropic", models: [{ name: "claude-opus-4-6" }] },
-        openai: { name: "openai", models: [{ name: "gpt-5.4" }] },
+      provider: {
+        anthropic: { models: { "claude-opus-4-6": { name: "Claude Opus 4.6" } } },
+        openai: { models: { "gpt-5.4": { name: "GPT 5.4" } } },
       },
     },
     batchReplaceModel: mockBatchReplace,

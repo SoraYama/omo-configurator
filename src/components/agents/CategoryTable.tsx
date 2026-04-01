@@ -20,20 +20,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useConfig } from "@/context/ConfigContext";
-import { extractModelsFromProviders } from "@/lib/config";
 import { getRecommendation } from "@/lib/recommended-models";
-import { useMemo } from "react";
+import { ModelSelect } from "@/components/shared/ModelSelect";
 
 const VARIANTS = ["__none", "medium", "high", "xhigh", "max"];
 
 export function CategoryTable() {
-  const { ohMyOpenCodeConfig, openCodeConfig, updateCategory } = useConfig();
+  const { ohMyOpenCodeConfig, updateCategory } = useConfig();
 
   const categories = ohMyOpenCodeConfig?.categories ?? {};
-  const models = useMemo(() => {
-    if (!openCodeConfig?.providers) return [];
-    return extractModelsFromProviders(openCodeConfig.providers);
-  }, [openCodeConfig?.providers]);
 
   return (
     <div>
@@ -58,23 +53,13 @@ export function CategoryTable() {
               <TableRow key={name}>
                 <TableCell className="font-mono text-sm">{name}</TableCell>
                 <TableCell>
-                  <Select
+                  <ModelSelect
                     value={cat.model}
                     onValueChange={(model) =>
                       updateCategory(name, { ...cat, model })
                     }
-                  >
-                    <SelectTrigger className="w-[280px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {models.map((m) => (
-                        <SelectItem key={m} value={m}>
-                          {m}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    triggerClassName="w-[280px]"
+                  />
                 </TableCell>
                 <TableCell>
                   <Select

@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "oc-init",
+  "productName": "omo-configurator",
   "version": "0.1.0",
-  "identifier": "com.sorayama.oc-init",
+  "identifier": "com.sorayama.omo-configurator",
   "build": {
     "beforeDevCommand": "tnpm run dev",
     "devUrl": "http://localhost:1420",
@@ -17,7 +17,7 @@
   "app": {
     "windows": [
       {
-        "title": "OpenCode Configurator",
+        "title": "omo-configurator",
         "width": 1100,
         "height": 700,
         "minWidth": 900,

@@ -20,20 +20,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useConfig } from "@/context/ConfigContext";
-import { extractModelsFromProviders } from "@/lib/config";
 import { getRecommendation } from "@/lib/recommended-models";
-import { useMemo } from "react";
+import { ModelSelect } from "@/components/shared/ModelSelect";
 
 const VARIANTS = ["__none", "medium", "high", "xhigh", "max"];
 
 export function AgentTable() {
-  const { ohMyOpenCodeConfig, openCodeConfig, updateAgent } = useConfig();
+  const { ohMyOpenCodeConfig, updateAgent } = useConfig();
 
   const agents = ohMyOpenCodeConfig?.agents ?? {};
-  const models = useMemo(() => {
-    if (!openCodeConfig?.providers) return [];
-    return extractModelsFromProviders(openCodeConfig.providers);
-  }, [openCodeConfig?.providers]);
 
   return (
     <div>
@@ -58,23 +53,13 @@ export function AgentTable() {
               <TableRow key={name}>
                 <TableCell className="font-mono text-sm">{name}</TableCell>
                 <TableCell>
-                  <Select
+                  <ModelSelect
                     value={agent.model}
                     onValueChange={(model) =>
                       updateAgent(name, { ...agent, model })
                     }
-                  >
-                    <SelectTrigger className="w-[280px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {models.map((m) => (
-                        <SelectItem key={m} value={m}>
-                          {m}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    triggerClassName="w-[280px]"
+                  />
                 </TableCell>
                 <TableCell>
                   <Select

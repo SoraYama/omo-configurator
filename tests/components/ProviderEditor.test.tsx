@@ -9,7 +9,7 @@ vi.mock("@tauri-apps/api/core", () => ({
 
 vi.mock("@/context/ConfigContext", () => ({
   useConfig: () => ({
-    openCodeConfig: { providers: {} },
+    openCodeConfig: { provider: {} },
     updateProvider: mockUpdateProvider,
     deleteProvider: vi.fn(),
   }),
@@ -24,9 +24,11 @@ describe("ProviderEditor", () => {
         name="openai"
         provider={{
           name: "openai",
-          baseURL: "https://api.openai.com",
-          apiKey: "sk-xxx",
-          models: [{ name: "gpt-5.4", displayName: "GPT 5.4" }],
+          options: {
+            baseURL: "https://api.openai.com",
+            apiKey: "sk-xxx",
+          },
+          models: { "gpt-5.4": { name: "GPT 5.4" } },
         }}
       />,
     );
@@ -40,8 +42,8 @@ describe("ProviderEditor", () => {
         name="openai"
         provider={{
           name: "openai",
-          apiKey: "sk-supersecret",
-          models: [],
+          options: { apiKey: "sk-supersecret" },
+          models: {},
         }}
       />,
     );

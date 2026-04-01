@@ -12,12 +12,12 @@ export function ProviderList() {
   const [selected, setSelected] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
-  const providers = openCodeConfig?.providers ?? {};
+  const providers = openCodeConfig?.provider ?? {};
   const providerNames = Object.keys(providers);
 
   const handleAdd = () => {
     const name = `provider-${Date.now()}`;
-    const newProvider: Provider = { name, models: [] };
+    const newProvider: Provider = { name, models: {} };
     updateProvider(name, newProvider);
     setSelected(name);
   };

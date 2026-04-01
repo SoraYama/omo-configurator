@@ -19,11 +19,11 @@ import type {
 describe("config types", () => {
   it("OpenCodeConfig 可以表示一个最小配置", () => {
     const config: OpenCodeConfig = {
-      plugins: [{ name: "oh-my-opencode", version: "3.14.0" }],
-      mcpServers: {},
-      providers: {},
+      plugin: ["oh-my-openagent@3.14.0"],
+      mcp: {},
+      provider: {},
     };
-    expect(config.plugins).toHaveLength(1);
+    expect(config.plugin).toHaveLength(1);
   });
 
   it("OhMyOpenCodeConfig 可以表示 agent 和 category", () => {
@@ -48,7 +48,7 @@ describe("config types", () => {
     const local: McpServer = {
       type: "local",
       command: ["node", "server.js"],
-      env: { PORT: "3000" },
+      environment: { PORT: "3000" },
     };
     expect(remote.type).toBe("remote");
     expect(local.type).toBe("local");
@@ -77,25 +77,24 @@ describe("config types", () => {
 });
 
 describe("parseOpenCodeConfig", () => {
-  it("解析包含 providers 和 mcpServers 的完整配置", () => {
+  it("解析包含 provider 和 mcp 的完整配置", () => {
     const raw = JSON.stringify({
-      plugins: [{ name: "oh-my-opencode", version: "3.14.0" }],
-      mcpServers: {
+      plugin: ["oh-my-openagent@3.14.0"],
+      mcp: {
         test: { type: "remote", url: "https://x.com" },
       },
-      providers: {
+      provider: {
         openai: {
-          name: "openai",
-          baseURL: "https://api.openai.com",
-          apiKey: "sk-xxx",
-          models: [{ name: "gpt-5.4", displayName: "GPT 5.4" }],
+          npm: "@ai-sdk/openai-compatible",
+          options: { baseURL: "https://api.openai.com/v1", apiKey: "sk-xxx" },
+          models: { "gpt-5.4": { name: "GPT 5.4" } },
         },
       },
     });
     const config = parseOpenCodeConfig(raw);
-    expect(config.plugins).toHaveLength(1);
-    expect(config.mcpServers?.test.type).toBe("remote");
-    expect(config.providers?.openai.models).toHaveLength(1);
+    expect(config.plugin).toHaveLength(1);
+    expect(config.mcp?.test.type).toBe("remote");
+    expect(config.provider?.openai.models?.["gpt-5.4"].name).toBe("GPT 5.4");
   });
 
   it("对无效 JSON 抛出明确错误", () => {
@@ -132,15 +131,13 @@ describe("extractModelsFromProviders", () => {
   it("从多个 provider 中聚合所有模型", () => {
     const providers: Record<string, Provider> = {
       openai: {
-        name: "openai",
-        models: [
-          { name: "gpt-5.4", displayName: "GPT 5.4" },
-          { name: "gpt-5.4-mini" },
-        ],
+        models: {
+          "gpt-5.4": { name: "GPT 5.4" },
+          "gpt-5.4-mini": { name: "GPT 5.4 Mini" },
+        },
       },
       anthropic: {
-        name: "anthropic",
-        models: [{ name: "claude-opus-4-6" }],
+        models: { "claude-opus-4-6": { name: "Claude Opus 4.6" } },
       },
     };
     const models = extractModelsFromProviders(providers);
@@ -154,20 +151,32 @@ describe("extractModelsFromProviders", () => {
   it("对空 providers 返回空数组", () => {
     expect(extractModelsFromProviders({})).toEqual([]);
   });
+
+  it("provider 无 models 字段时跳过", () => {
+    const providers: Record<string, Provider> = {
+      openrouter: { options: { apiKey: "sk-xxx" } },
+    };
+    expect(extractModelsFromProviders(providers)).toEqual([]);
+  });
 });
 
 describe("getOhMyOpenCodeVersion", () => {
-  it("从 plugins 中提取 oh-my-opencode 版本", () => {
+  it("从 plugin 字符串数组中提取版本号（oh-my-openagent）", () => {
     const config: OpenCodeConfig = {
-      plugins: [
-        { name: "other-plugin", version: "1.0.0" },
-        { name: "oh-my-opencode", version: "3.14.0" },
-      ],
+      plugin: ["other-plugin@1.0.0", "oh-my-openagent@3.14.0"],
     };
     expect(getOhMyOpenCodeVersion(config)).toBe("3.14.0");
   });
 
+  it("支持 oh-my-opencode 名称格式", () => {
+    const config: OpenCodeConfig = {
+      plugin: ["oh-my-opencode@2.0.0"],
+    };
+    expect(getOhMyOpenCodeVersion(config)).toBe("2.0.0");
+  });
+
   it("未找到插件时返回 undefined", () => {
-    expect(getOhMyOpenCodeVersion({ plugins: [] })).toBeUndefined();
+    expect(getOhMyOpenCodeVersion({ plugin: [] })).toBeUndefined();
+    expect(getOhMyOpenCodeVersion({})).toBeUndefined();
   });
 });

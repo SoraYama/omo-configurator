@@ -15,16 +15,21 @@ import type {
   McpServer,
   Provider,
   ConfigFileType,
+  AuthConfig,
 } from "@/types/config";
 import {
   parseOpenCodeConfig,
   parseOhMyOpenCodeConfig,
   serializeConfig,
 } from "@/lib/config";
+import { fetchExternalProviderModels } from "@/lib/providers";
 
 interface ConfigState {
   openCodeConfig: OpenCodeConfig | null;
   ohMyOpenCodeConfig: OhMyOpenCodeConfig | null;
+  authConfig: AuthConfig | null;
+  /** 从 auth.json 连接的内置/外部 provider 拉取到的模型列表 */
+  externalModels: string[];
   activeFile: ConfigFileType;
   loading: boolean;
   error: string | null;
@@ -36,7 +41,8 @@ type ConfigAction =
   | { type: "SET_OPENCODE"; config: OpenCodeConfig }
   | { type: "SET_OH_MY"; config: OhMyOpenCodeConfig }
   | { type: "SET_ACTIVE_FILE"; file: ConfigFileType }
-  | { type: "SET_BOTH"; openCode: OpenCodeConfig; ohMy: OhMyOpenCodeConfig };
+  | { type: "SET_BOTH"; openCode: OpenCodeConfig; ohMy: OhMyOpenCodeConfig; auth: AuthConfig }
+  | { type: "SET_EXTERNAL_MODELS"; models: string[] };
 
 function configReducer(state: ConfigState, action: ConfigAction): ConfigState {
   switch (action.type) {
@@ -55,9 +61,12 @@ function configReducer(state: ConfigState, action: ConfigAction): ConfigState {
         ...state,
         openCodeConfig: action.openCode,
         ohMyOpenCodeConfig: action.ohMy,
+        authConfig: action.auth,
         loading: false,
         error: null,
       };
+    case "SET_EXTERNAL_MODELS":
+      return { ...state, externalModels: action.models };
     default:
       return state;
   }
@@ -66,6 +75,8 @@ function configReducer(state: ConfigState, action: ConfigAction): ConfigState {
 interface ConfigContextValue extends ConfigState {
   reload: () => Promise<void>;
   setActiveFile: (file: ConfigFileType) => void;
+  /** 手动触发重新拉取外部 provider 模型（例如新连接了 provider 后） */
+  refreshExternalModels: () => Promise<void>;
   updateAgent: (name: string, config: AgentConfig) => void;
   updateCategory: (name: string, config: CategoryConfig) => void;
   updateMcpServer: (name: string, server: McpServer) => void;
@@ -100,6 +111,8 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(configReducer, {
     openCodeConfig: null,
     ohMyOpenCodeConfig: null,
+    authConfig: null,
+    externalModels: [],
     activeFile: "oh-my-opencode",
     loading: true,
     error: null,
@@ -108,19 +121,32 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   const reload = useCallback(async () => {
     dispatch({ type: "SET_LOADING", loading: true });
     try {
-      const [ocRaw, omRaw] = await Promise.all([
+      const [ocRaw, omRaw, authRaw] = await Promise.all([
         invoke<string>("read_config", { filename: "opencode.json" }),
         invoke<string>("read_config", { filename: "oh-my-opencode.json" }),
+        invoke<string>("read_auth"),
       ]);
+      const auth = JSON.parse(authRaw) as AuthConfig;
       dispatch({
         type: "SET_BOTH",
         openCode: parseOpenCodeConfig(ocRaw),
         ohMy: parseOhMyOpenCodeConfig(omRaw),
+        auth,
+      });
+      // 异步拉取外部模型，不阻塞 UI 渲染
+      void fetchExternalProviderModels(auth).then((models) => {
+        dispatch({ type: "SET_EXTERNAL_MODELS", models });
       });
     } catch (e) {
       dispatch({ type: "SET_ERROR", error: String(e) });
     }
   }, []);
+
+  const refreshExternalModels = useCallback(async () => {
+    if (!state.authConfig) return;
+    const models = await fetchExternalProviderModels(state.authConfig);
+    dispatch({ type: "SET_EXTERNAL_MODELS", models });
+  }, [state.authConfig]);
 
   useEffect(() => {
     void reload();
@@ -161,7 +187,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
       if (!state.openCodeConfig) return;
       const updated: OpenCodeConfig = {
         ...state.openCodeConfig,
-        mcpServers: { ...state.openCodeConfig.mcpServers, [name]: server },
+        mcp: { ...state.openCodeConfig.mcp, [name]: server },
       };
       dispatch({ type: "SET_OPENCODE", config: updated });
       void persistOpenCode(updated);
@@ -171,12 +197,12 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
 
   const deleteMcpServer = useCallback(
     (name: string) => {
-      if (!state.openCodeConfig?.mcpServers) return;
-      const mcpServers = { ...state.openCodeConfig.mcpServers };
-      delete mcpServers[name];
+      if (!state.openCodeConfig?.mcp) return;
+      const mcp = { ...state.openCodeConfig.mcp };
+      delete mcp[name];
       const updated: OpenCodeConfig = {
         ...state.openCodeConfig,
-        mcpServers,
+        mcp,
       };
       dispatch({ type: "SET_OPENCODE", config: updated });
       void persistOpenCode(updated);
@@ -189,7 +215,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
       if (!state.openCodeConfig) return;
       const updated: OpenCodeConfig = {
         ...state.openCodeConfig,
-        providers: { ...state.openCodeConfig.providers, [name]: provider },
+        provider: { ...state.openCodeConfig.provider, [name]: provider },
       };
       dispatch({ type: "SET_OPENCODE", config: updated });
       void persistOpenCode(updated);
@@ -199,12 +225,12 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
 
   const deleteProvider = useCallback(
     (name: string) => {
-      if (!state.openCodeConfig?.providers) return;
-      const providers = { ...state.openCodeConfig.providers };
-      delete providers[name];
+      if (!state.openCodeConfig?.provider) return;
+      const provider = { ...state.openCodeConfig.provider };
+      delete provider[name];
       const updated: OpenCodeConfig = {
         ...state.openCodeConfig,
-        providers,
+        provider,
       };
       dispatch({ type: "SET_OPENCODE", config: updated });
       void persistOpenCode(updated);
@@ -248,9 +274,12 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
       if (!state.openCodeConfig) return;
       const updated: OpenCodeConfig = {
         ...state.openCodeConfig,
-        plugins: state.openCodeConfig.plugins?.map((p) =>
-          p.name === pluginName ? { ...p, version: newVersion } : p,
-        ),
+        plugin: state.openCodeConfig.plugin?.map((p) => {
+          if (typeof p === "string" && p.startsWith(pluginName + "@")) {
+            return `${pluginName}@${newVersion}`;
+          }
+          return p;
+        }),
       };
       dispatch({ type: "SET_OPENCODE", config: updated });
       void persistOpenCode(updated);
@@ -264,6 +293,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
         ...state,
         reload,
         setActiveFile,
+        refreshExternalModels,
         updateAgent,
         updateCategory,
         updateMcpServer,

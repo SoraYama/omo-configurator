@@ -133,8 +133,8 @@ export function McpEditor({ name, server, onSave }: McpEditorProps) {
       </div>
       <KeyValueEditor
         label="环境变量"
-        value={local.env ?? {}}
-        onChange={(env) => setDraft({ ...local, env })}
+        value={local.environment ?? {}}
+        onChange={(environment) => setDraft({ ...local, environment })}
       />
       <div className="flex items-center gap-2">
         <Switch

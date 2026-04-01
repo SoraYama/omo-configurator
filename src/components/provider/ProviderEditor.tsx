@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useConfig } from "@/context/ConfigContext";
-import type { Provider, ProviderModel } from "@/types/config";
+import type { Provider, ProviderModelEntry } from "@/types/config";
 
 interface ProviderEditorProps {
   name: string;
@@ -28,19 +28,35 @@ export function ProviderEditor({ name, provider }: ProviderEditorProps) {
     updateProvider(name, updated);
   };
 
-  const updateModel = (index: number, field: keyof ProviderModel, value: string) => {
-    const models = [...draft.models];
-    models[index] = { ...models[index], [field]: value };
-    save({ ...draft, models });
+  const models = Object.entries(draft.models ?? {});
+
+  const updateModelId = (oldId: string, newId: string) => {
+    const updated: Record<string, ProviderModelEntry> = {};
+    for (const [id, entry] of Object.entries(draft.models ?? {})) {
+      updated[id === oldId ? newId : id] = entry;
+    }
+    save({ ...draft, models: updated });
+  };
+
+  const updateModelName = (id: string, displayName: string) => {
+    save({
+      ...draft,
+      models: { ...draft.models, [id]: { name: displayName } },
+    });
   };
 
   const addModel = () => {
-    save({ ...draft, models: [...draft.models, { name: "" }] });
+    const newId = `new-model-${Date.now()}`;
+    save({
+      ...draft,
+      models: { ...draft.models, [newId]: { name: "" } },
+    });
   };
 
-  const removeModel = (index: number) => {
-    const models = draft.models.filter((_, i) => i !== index);
-    save({ ...draft, models });
+  const removeModel = (id: string) => {
+    const updated = { ...draft.models };
+    delete updated[id];
+    save({ ...draft, models: updated });
   };
 
   return (
@@ -49,7 +65,7 @@ export function ProviderEditor({ name, provider }: ProviderEditorProps) {
         <div className="space-y-2">
           <Label>名称</Label>
           <Input
-            value={draft.name}
+            value={draft.name ?? ""}
             onChange={(e) => save({ ...draft, name: e.target.value })}
           />
         </div>
@@ -58,15 +74,20 @@ export function ProviderEditor({ name, provider }: ProviderEditorProps) {
           <Input
             value={draft.npm ?? ""}
             onChange={(e) => save({ ...draft, npm: e.target.value })}
-            placeholder="例如: @openai/provider"
+            placeholder="例如: @ai-sdk/openai-compatible"
           />
         </div>
         <div className="space-y-2">
           <Label>Base URL</Label>
           <Input
-            value={draft.baseURL ?? ""}
-            onChange={(e) => save({ ...draft, baseURL: e.target.value })}
-            placeholder="https://api.example.com"
+            value={draft.options?.baseURL ?? ""}
+            onChange={(e) =>
+              save({
+                ...draft,
+                options: { ...draft.options, baseURL: e.target.value },
+              })
+            }
+            placeholder="https://api.example.com/v1"
           />
         </div>
         <div className="space-y-2">
@@ -76,8 +97,13 @@ export function ProviderEditor({ name, provider }: ProviderEditorProps) {
               id="api-key-input"
               type={showKey ? "text" : "password"}
               aria-label="API Key"
-              value={draft.apiKey ?? ""}
-              onChange={(e) => save({ ...draft, apiKey: e.target.value })}
+              value={draft.options?.apiKey ?? ""}
+              onChange={(e) =>
+                save({
+                  ...draft,
+                  options: { ...draft.options, apiKey: e.target.value },
+                })
+              }
             />
             <Button
               variant="outline"
@@ -100,28 +126,27 @@ export function ProviderEditor({ name, provider }: ProviderEditorProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>模型名称</TableHead>
+              <TableHead>模型 ID</TableHead>
               <TableHead>显示名称</TableHead>
               <TableHead className="w-[60px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {draft.models.map((model, i) => (
-              <TableRow key={i}>
+            {models.map(([id, entry]) => (
+              <TableRow key={id}>
                 <TableCell>
                   <Input
-                    value={model.name}
-                    onChange={(e) => updateModel(i, "name", e.target.value)}
-                    placeholder="gpt-5.4"
+                    value={id}
+                    onChange={(e) => updateModelId(id, e.target.value)}
+                    placeholder="model-id"
+                    className="font-mono text-sm"
                   />
                 </TableCell>
                 <TableCell>
                   <Input
-                    value={model.displayName ?? ""}
-                    onChange={(e) =>
-                      updateModel(i, "displayName", e.target.value)
-                    }
-                    placeholder="GPT 5.4"
+                    value={entry.name}
+                    onChange={(e) => updateModelName(id, e.target.value)}
+                    placeholder="Model Display Name"
                   />
                 </TableCell>
                 <TableCell>
@@ -129,13 +154,23 @@ export function ProviderEditor({ name, provider }: ProviderEditorProps) {
                     variant="ghost"
                     size="sm"
                     className="text-destructive"
-                    onClick={() => removeModel(i)}
+                    onClick={() => removeModel(id)}
                   >
                     ×
                   </Button>
                 </TableCell>
               </TableRow>
             ))}
+            {models.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={3}
+                  className="text-center text-muted-foreground text-sm py-4"
+                >
+                  暂无模型
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

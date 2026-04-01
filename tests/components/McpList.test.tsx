@@ -8,7 +8,7 @@ vi.mock("@tauri-apps/api/core", () => ({
 vi.mock("@/context/ConfigContext", () => ({
   useConfig: () => ({
     openCodeConfig: {
-      mcpServers: {
+      mcp: {
         "my-remote": {
           type: "remote",
           url: "https://mcp.example.com",
@@ -17,7 +17,7 @@ vi.mock("@/context/ConfigContext", () => ({
         "my-local": {
           type: "local",
           command: ["node", "server.js"],
-          env: { PORT: "3000" },
+          environment: { PORT: "3000" },
         },
       },
     },

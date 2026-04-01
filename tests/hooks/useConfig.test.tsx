@@ -12,14 +12,14 @@ import type { ReactNode } from "react";
 const mockedInvoke = vi.mocked(invoke);
 
 const MOCK_OPENCODE = JSON.stringify({
-  plugins: [{ name: "oh-my-opencode", version: "3.14.0" }],
-  providers: {
+  plugin: ["oh-my-openagent@3.14.0"],
+  provider: {
     openai: {
-      name: "openai",
-      models: [{ name: "gpt-5.4" }],
+      options: { baseURL: "https://api.openai.com/v1", apiKey: "sk-xxx" },
+      models: { "gpt-5.4": { name: "GPT 5.4" } },
     },
   },
-  mcpServers: {},
+  mcp: {},
 });
 
 const MOCK_OH_MY = JSON.stringify({
@@ -43,7 +43,8 @@ describe("useConfig", () => {
   it("初始化时加载两个配置文件", async () => {
     mockedInvoke
       .mockResolvedValueOnce(MOCK_OPENCODE)
-      .mockResolvedValueOnce(MOCK_OH_MY);
+      .mockResolvedValueOnce(MOCK_OH_MY)
+      .mockResolvedValueOnce("{}"); // read_auth
 
     const { result } = renderHook(() => useConfig(), { wrapper });
 
@@ -62,6 +63,7 @@ describe("useConfig", () => {
     mockedInvoke
       .mockResolvedValueOnce(MOCK_OPENCODE)
       .mockResolvedValueOnce(MOCK_OH_MY)
+      .mockResolvedValueOnce("{}") // read_auth
       .mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useConfig(), { wrapper });

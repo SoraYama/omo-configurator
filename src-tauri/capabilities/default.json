@@ -22,6 +22,10 @@
       "identifier": "fs:allow-mkdir",
       "allow": [{ "path": "$HOME/.config/opencode/.snapshots/**" }]
     },
+    {
+      "identifier": "fs:allow-read-text-file",
+      "allow": [{ "path": "$HOME/.local/share/opencode/auth.json" }]
+    },
     "http:default"
   ]
 }
