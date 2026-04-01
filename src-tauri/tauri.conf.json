@@ -18,9 +18,13 @@
   "app": {
     "windows": [
       {
-        "title": "oc-init",
-        "width": 800,
-        "height": 600
+        "title": "OpenCode Configurator",
+        "width": 1100,
+        "height": 700,
+        "minWidth": 900,
+        "minHeight": 600,
+        "resizable": true,
+        "decorations": true
       }
     ],
     "security": {

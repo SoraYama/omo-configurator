@@ -123,8 +123,12 @@
     }
   body {
     @apply bg-background text-foreground;
+    margin: 0;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
     }
   html {
     @apply font-sans;
+    font-size: 14px;
     }
 }
