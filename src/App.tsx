@@ -1,49 +1,59 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
-function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+import { TopBar } from "@/components/layout/TopBar";
+import { TabBar, type TabValue } from "@/components/layout/TabBar";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { AgentTable } from "@/components/agents/AgentTable";
+import { CategoryTable } from "@/components/agents/CategoryTable";
+import { BatchModelBar } from "@/components/agents/BatchModelBar";
+import { McpList } from "@/components/mcp/McpList";
+import { ProviderList } from "@/components/provider/ProviderList";
+import { useConfig } from "@/context/ConfigContext";
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
+export default function App() {
+  const [tab, setTab] = useState<TabValue>("agents");
+  const { loading, error } = useConfig();
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-muted-foreground">加载配置中...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center space-y-2">
+          <p className="text-destructive font-medium">加载失败</p>
+          <p className="text-sm text-muted-foreground">{error}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="flex h-screen flex-col">
+      <TopBar />
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="px-4 pt-3">
+            <TabBar value={tab} onValueChange={setTab} />
+          </div>
+          <div className="flex-1 overflow-auto p-4">
+            {tab === "agents" && (
+              <div className="space-y-6">
+                <BatchModelBar />
+                <AgentTable />
+                <CategoryTable />
+              </div>
+            )}
+            {tab === "mcp" && <McpList />}
+            {tab === "providers" && <ProviderList />}
+          </div>
+        </div>
       </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
+    </div>
   );
 }
-
-export default App;
