@@ -4,10 +4,16 @@
   "version": "0.1.0",
   "identifier": "com.sorayama.oc-init",
   "build": {
-    "beforeDevCommand": "npm run dev",
+    "beforeDevCommand": "tnpm run dev",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "npm run build",
+    "beforeBuildCommand": "tnpm run build",
     "frontendDist": "../dist"
+  },
+  "plugins": {
+    "fs": {
+      "requireLiteralLeadingDot": false,
+      "scope": ["$HOME/.config/opencode/**"]
+    }
   },
   "app": {
     "windows": [
