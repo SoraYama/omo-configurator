@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { AuthConfig } from "@/types/config";
+import type { AuthConfig, OpenCodeConfig } from "@/types/config";
 
 /**
  * 从 opencode zen 的 /models 端点获取模型列表（通过 Rust 侧，绕过 CORS）
@@ -31,7 +31,8 @@ async function fetchModelsDevProviders(providerIds: string[]): Promise<string[]>
 }
 
 /**
- * 根据 auth.json 中连接的 provider 列表，异步拉取所有外部模型。
+ * 根据 auth.json 中连接的 provider 列表 + opencode.json 中有 apiKey 的 provider，
+ * 异步拉取所有外部模型。
  *
  * - opencode (zen)：调用 zen /models API
  * - 其他内置 provider：调用 models.dev/api.json 批量获取
@@ -40,20 +41,34 @@ async function fetchModelsDevProviders(providerIds: string[]): Promise<string[]>
  */
 export async function fetchExternalProviderModels(
   auth: AuthConfig,
+  openCodeConfig: OpenCodeConfig | null = null,
 ): Promise<string[]> {
-  const entries = Object.entries(auth);
-  if (entries.length === 0) return [];
-
   let zenApiKey: string | null = null;
   const otherProviderIds: string[] = [];
 
-  for (const [providerId, entry] of entries) {
+  // 从 auth.json 中提取 provider 列表
+  for (const [providerId, entry] of Object.entries(auth)) {
     if (providerId === "opencode" && entry.type === "api") {
       zenApiKey = entry.key;
     } else if (providerId !== "opencode") {
       otherProviderIds.push(providerId);
     }
   }
+
+  // 从 opencode.json 中提取有 apiKey 但未在 auth.json 中的 provider
+  if (openCodeConfig?.provider) {
+    for (const [providerId, provider] of Object.entries(openCodeConfig.provider)) {
+      if (
+        provider.options?.apiKey &&
+        !otherProviderIds.includes(providerId) &&
+        providerId !== "opencode"
+      ) {
+        otherProviderIds.push(providerId);
+      }
+    }
+  }
+
+  if (!zenApiKey && otherProviderIds.length === 0) return [];
 
   const [zenModels, externalModels] = await Promise.all([
     zenApiKey ? fetchZenModels(zenApiKey) : Promise.resolve([]),

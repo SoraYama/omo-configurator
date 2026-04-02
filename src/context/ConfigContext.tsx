@@ -126,15 +126,16 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
         invoke<string>("read_config", { filename: "oh-my-opencode.json" }),
         invoke<string>("read_auth"),
       ]);
+      const oc = parseOpenCodeConfig(ocRaw);
       const auth = JSON.parse(authRaw) as AuthConfig;
       dispatch({
         type: "SET_BOTH",
-        openCode: parseOpenCodeConfig(ocRaw),
+        openCode: oc,
         ohMy: parseOhMyOpenCodeConfig(omRaw),
         auth,
       });
       // 异步拉取外部模型，不阻塞 UI 渲染
-      void fetchExternalProviderModels(auth).then((models) => {
+      void fetchExternalProviderModels(auth, oc).then((models) => {
         dispatch({ type: "SET_EXTERNAL_MODELS", models });
       });
     } catch (e) {
@@ -144,9 +145,9 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
 
   const refreshExternalModels = useCallback(async () => {
     if (!state.authConfig) return;
-    const models = await fetchExternalProviderModels(state.authConfig);
+    const models = await fetchExternalProviderModels(state.authConfig, state.openCodeConfig);
     dispatch({ type: "SET_EXTERNAL_MODELS", models });
-  }, [state.authConfig]);
+  }, [state.authConfig, state.openCodeConfig]);
 
   useEffect(() => {
     void reload();
