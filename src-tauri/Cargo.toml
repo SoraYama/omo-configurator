@@ -1,6 +1,6 @@
 [package]
 name = "omo_configurator"
-version = "0.1.0"
+version = "0.1.2"
 description = "oh-my-openagent configure GUI"
 authors = ["you"]
 edition = "2021"
