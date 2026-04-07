@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -31,11 +32,12 @@ interface ModelSelectProps {
 export function ModelSelect({
   value,
   onValueChange,
-  placeholder = "选择模型",
+  placeholder,
   triggerClassName,
   models: modelsProp,
 }: ModelSelectProps) {
   const { openCodeConfig, ohMyOpenCodeConfig, externalModels } = useConfig();
+  const { t } = useTranslation("common");
   const [open, setOpen] = useState(false);
 
   const defaultModels = useMemo(
@@ -43,6 +45,7 @@ export function ModelSelect({
     [openCodeConfig, ohMyOpenCodeConfig, externalModels],
   );
   const models = modelsProp ?? defaultModels;
+  const resolvedPlaceholder = placeholder ?? t("modelSelect.placeholder");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -57,15 +60,18 @@ export function ModelSelect({
             triggerClassName,
           )}
         >
-          <span className="truncate">{value || placeholder}</span>
+          <span className="truncate">{value || resolvedPlaceholder}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[400px] p-0" align="start">
         <Command>
-          <CommandInput placeholder="搜索模型..." className="h-9" />
+          <CommandInput
+            placeholder={t("modelSelect.searchPlaceholder")}
+            className="h-9"
+          />
           <CommandList>
-            <CommandEmpty>未找到匹配的模型</CommandEmpty>
+            <CommandEmpty>{t("modelSelect.noResult")}</CommandEmpty>
             <CommandGroup>
               {models.map((model) => (
                 <CommandItem

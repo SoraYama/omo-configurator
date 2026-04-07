@@ -1,28 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getVersion } from "@tauri-apps/api/app";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { useConfig } from "@/context/ConfigContext";
 import { getOhMyOpenCodeVersion } from "@/lib/config";
-import type { ConfigFileType } from "@/types/config";
 
 export function TopBar() {
   const {
     openCodeConfig,
-    activeFile,
-    setActiveFile,
     updatePluginVersion,
     externalModels,
     authConfig,
     refreshExternalModels,
   } = useConfig();
+  const { t } = useTranslation("common");
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
+  const [appVersion, setAppVersion] = useState<string | null>(null);
+
+  useEffect(() => {
+    void getVersion()
+      .then(setAppVersion)
+      .catch(() => setAppVersion(null));
+  }, []);
 
   const currentVersion = openCodeConfig
     ? getOhMyOpenCodeVersion(openCodeConfig)
@@ -46,17 +48,19 @@ export function TopBar() {
   const hasUpdate =
     latestVersion && currentVersion && latestVersion !== currentVersion;
 
-  const fileOptions: { label: string; value: ConfigFileType }[] = [
-    { label: "oh-my-opencode.json", value: "oh-my-opencode" },
-    { label: "opencode.json", value: "opencode" },
-  ];
-
   return (
     <div className="flex items-center justify-between border-b px-4 py-2 bg-background">
       <div className="flex items-center gap-3">
-        <h1 className="text-lg font-semibold">OpenCode Configurator</h1>
+        <h1 className="text-lg font-semibold">{t("app.name")}</h1>
+        {appVersion && (
+          <Badge variant="secondary" title={t("app.appVersionTitle")}>
+            v{appVersion}
+          </Badge>
+        )}
         {currentVersion && (
-          <Badge variant="secondary">v{currentVersion}</Badge>
+          <Badge variant="secondary" title={t("app.pluginVersionTitle")}>
+            oh-my-openagent v{currentVersion}
+          </Badge>
         )}
         {hasUpdate && (
           <Badge
@@ -66,49 +70,34 @@ export function TopBar() {
               updatePluginVersion("oh-my-openagent", latestVersion!)
             }
           >
-            → v{latestVersion} 可更新，点击升级
+            {t("app.updateAvailable", { version: latestVersion })}
           </Badge>
         )}
       </div>
       <div className="flex items-center gap-2">
-        {/* 已连接的外部 provider 及模型数量指示 */}
         {authConfig && Object.keys(authConfig).length > 0 && (
           <Badge
             variant="secondary"
             className="cursor-pointer text-xs"
-            title={`已连接: ${Object.keys(authConfig).join(", ")}`}
+            title={t("app.connectedProviders", {
+              names: Object.keys(authConfig).join(", "),
+            })}
             onClick={() => void refreshExternalModels()}
           >
             {externalModels.length > 0
-              ? `${externalModels.length} 个外部模型`
-              : "加载外部模型..."}
+              ? t("app.externalModelsLoaded", { count: externalModels.length })
+              : t("app.externalModelsLoading")}
           </Badge>
         )}
+        <LanguageSwitcher />
         <Button
           variant="outline"
           size="sm"
           onClick={checkUpdate}
           disabled={checking}
         >
-          {checking ? "检查中..." : "检查更新"}
+          {checking ? t("app.checking") : t("app.checkUpdate")}
         </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              {fileOptions.find((f) => f.value === activeFile)?.label}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {fileOptions.map((opt) => (
-              <DropdownMenuItem
-                key={opt.value}
-                onClick={() => setActiveFile(opt.value)}
-              >
-                {opt.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
     </div>
   );

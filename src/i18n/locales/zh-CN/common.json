@@ -1,0 +1,52 @@
+{
+  "app": {
+    "name": "omo-configurator",
+    "loading": "加载配置中...",
+    "loadError": "加载失败",
+    "checkUpdate": "检查更新",
+    "checking": "检查中...",
+    "updateAvailable": "→ v{{version}} 可更新，点击升级",
+    "appVersionTitle": "本应用（omo-configurator）版本",
+    "pluginVersionTitle": "npm 包 oh-my-openagent 的版本",
+    "connectedProviders": "已连接: {{names}}",
+    "externalModelsLoading": "加载外部模型...",
+    "externalModelsLoaded": "{{count}} 个外部模型"
+  },
+  "actions": {
+    "save": "保存",
+    "cancel": "取消",
+    "confirm": "确认",
+    "delete": "删除",
+    "edit": "编辑",
+    "apply": "应用",
+    "export": "导出",
+    "rename": "改名",
+    "add": "+ 添加",
+    "hide": "隐藏",
+    "show": "显示"
+  },
+  "tabs": {
+    "agents": "Agents & Categories",
+    "mcp": "MCP 服务器",
+    "providers": "Providers"
+  },
+  "table": {
+    "name": "名称",
+    "model": "模型",
+    "variant": "Variant",
+    "recommend": "推荐"
+  },
+  "select": {
+    "placeholder": "选择...",
+    "none": "-"
+  },
+  "modelSelect": {
+    "placeholder": "选择模型",
+    "searchPlaceholder": "搜索模型...",
+    "noResult": "未找到匹配的模型"
+  },
+  "jsonPreview": {
+    "edit": "编辑",
+    "jsonError": "JSON 格式错误: {{message}}"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "title": "Snapshots",
+  "empty": "No snapshots yet",
+  "saveButton": "+ Save snapshot",
+  "actions": {
+    "rename": "Rename",
+    "export": "Export",
+    "delete": "Delete",
+    "restore": "Restore"
+  },
+  "dialogs": {
+    "restore": {
+      "title": "Restore Snapshot",
+      "description": "Are you sure you want to restore snapshot \"{{name}}\"? The current configuration will be overwritten."
+    },
+    "rename": {
+      "title": "Rename Snapshot",
+      "description": "Enter a new name for the snapshot folder. It must not conflict with existing snapshots.",
+      "label": "Name"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "batchReplace": {
+    "title": "批量替换",
+    "fromPlaceholder": "来源模型",
+    "toPlaceholder": "目标模型",
+    "applyButton": "应用",
+    "confirm": {
+      "title": "确认批量替换",
+      "description": "将把所有使用 \"{{from}}\" 的 agent/category（共 {{count}} 个）替换为 \"{{to}}\"{{variant}}。此操作不可撤销。",
+      "confirmText": "确认替换"
+    }
+  },
+  "table": {
+    "title": {
+      "agents": "Agents",
+      "categories": "Categories"
+    },
+    "tooltip": {
+      "recommended": "推荐: {{model}}",
+      "fallbackChain": "备选链:",
+      "applyRecommended": "点击应用推荐配置",
+      "noRecommendation": "无推荐配置"
+    }
+  }
+}

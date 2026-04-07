@@ -1,0 +1,25 @@
+{
+  "batchReplace": {
+    "title": "Batch Replace",
+    "fromPlaceholder": "Source model",
+    "toPlaceholder": "Target model",
+    "applyButton": "Apply",
+    "confirm": {
+      "title": "Confirm Batch Replace",
+      "description": "This will replace all agents/categories using \"{{from}}\" ({{count}} total) with \"{{to}}\"{{variant}}. This action cannot be undone.",
+      "confirmText": "Confirm Replace"
+    }
+  },
+  "table": {
+    "title": {
+      "agents": "Agents",
+      "categories": "Categories"
+    },
+    "tooltip": {
+      "recommended": "Recommended: {{model}}",
+      "fallbackChain": "Fallback chain:",
+      "applyRecommended": "Click to apply recommended config",
+      "noRecommendation": "No recommendation available"
+    }
+  }
+}

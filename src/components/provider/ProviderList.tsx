@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -9,6 +10,7 @@ import type { Provider } from "@/types/config";
 
 export function ProviderList() {
   const { openCodeConfig, updateProvider, deleteProvider } = useConfig();
+  const { t } = useTranslation("providers");
   const [selected, setSelected] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
@@ -64,7 +66,7 @@ export function ProviderList() {
               </div>
             ))}
             {providerNames.length === 0 && (
-              <p className="text-xs text-muted-foreground p-3">暂无 Provider</p>
+              <p className="text-xs text-muted-foreground p-3">{t("empty")}</p>
             )}
           </div>
         </ScrollArea>
@@ -77,16 +79,16 @@ export function ProviderList() {
           <ProviderEditor name={selected} provider={providers[selected]} />
         ) : (
           <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-            选择一个 Provider 开始编辑
+            {t("selectHint")}
           </div>
         )}
       </div>
 
       <ConfirmDialog
         open={deleteTarget !== null}
-        title="删除 Provider"
-        description={`确定要删除 "${deleteTarget}" 吗？关联的 API Key 和模型列表将一并删除。`}
-        confirmText="删除"
+        title={t("dialogs.delete.title")}
+        description={t("dialogs.delete.description", { name: deleteTarget })}
+        confirmText={t("dialogs.delete.confirmText")}
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}
         variant="destructive"

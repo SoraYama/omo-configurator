@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ interface ProviderEditorProps {
 
 export function ProviderEditor({ name, provider }: ProviderEditorProps) {
   const { updateProvider } = useConfig();
+  const { t } = useTranslation("providers");
   const [draft, setDraft] = useState<Provider>({ ...provider });
   const [showKey, setShowKey] = useState(false);
 
@@ -63,18 +65,18 @@ export function ProviderEditor({ name, provider }: ProviderEditorProps) {
     <div className="space-y-6">
       <div className="grid gap-4">
         <div className="space-y-2">
-          <Label>名称</Label>
+          <Label>{t("editor.nameLabel")}</Label>
           <Input
             value={draft.name ?? ""}
             onChange={(e) => save({ ...draft, name: e.target.value })}
           />
         </div>
         <div className="space-y-2">
-          <Label>NPM 包</Label>
+          <Label>{t("editor.npmLabel")}</Label>
           <Input
             value={draft.npm ?? ""}
             onChange={(e) => save({ ...draft, npm: e.target.value })}
-            placeholder="例如: @ai-sdk/openai-compatible"
+            placeholder={t("editor.npmPlaceholder")}
           />
         </div>
         <div className="space-y-2">
@@ -91,7 +93,7 @@ export function ProviderEditor({ name, provider }: ProviderEditorProps) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="api-key-input">API Key</Label>
+          <Label htmlFor="api-key-input">{t("editor.apiKeyLabel")}</Label>
           <div className="flex gap-2">
             <Input
               id="api-key-input"
@@ -110,7 +112,7 @@ export function ProviderEditor({ name, provider }: ProviderEditorProps) {
               size="sm"
               onClick={() => setShowKey(!showKey)}
             >
-              {showKey ? "隐藏" : "显示"}
+              {showKey ? t("editor.hideKey") : t("editor.showKey")}
             </Button>
           </div>
         </div>
@@ -118,16 +120,16 @@ export function ProviderEditor({ name, provider }: ProviderEditorProps) {
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label>模型列表</Label>
+          <Label>{t("editor.modelsLabel")}</Label>
           <Button variant="outline" size="sm" onClick={addModel}>
-            + 添加模型
+            {t("editor.addModel")}
           </Button>
         </div>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>模型 ID</TableHead>
-              <TableHead>显示名称</TableHead>
+              <TableHead>{t("editor.modelIdHeader")}</TableHead>
+              <TableHead>{t("editor.displayNameHeader")}</TableHead>
               <TableHead className="w-[60px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -167,7 +169,7 @@ export function ProviderEditor({ name, provider }: ProviderEditorProps) {
                   colSpan={3}
                   className="text-center text-muted-foreground text-sm py-4"
                 >
-                  暂无模型
+                  {t("editor.emptyModels")}
                 </TableCell>
               </TableRow>
             )}

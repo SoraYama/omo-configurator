@@ -1,0 +1,24 @@
+{
+  "empty": "暂无 Provider",
+  "selectHint": "选择一个 Provider 开始编辑",
+  "editor": {
+    "nameLabel": "名称",
+    "npmLabel": "NPM 包",
+    "npmPlaceholder": "例如: @ai-sdk/openai-compatible",
+    "apiKeyLabel": "API Key",
+    "hideKey": "隐藏",
+    "showKey": "显示",
+    "modelsLabel": "模型列表",
+    "addModel": "+ 添加模型",
+    "modelIdHeader": "模型 ID",
+    "displayNameHeader": "显示名称",
+    "emptyModels": "暂无模型"
+  },
+  "dialogs": {
+    "delete": {
+      "title": "删除 Provider",
+      "description": "确定要删除 \"{{name}}\" 吗？关联的 API Key 和模型列表将一并删除。",
+      "confirmText": "删除"
+    }
+  }
+}

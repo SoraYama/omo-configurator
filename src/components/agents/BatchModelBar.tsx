@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -15,6 +16,7 @@ const VARIANTS = ["__none", "medium", "high", "xhigh", "max"];
 
 export function BatchModelBar() {
   const { ohMyOpenCodeConfig, batchReplaceModel } = useConfig();
+  const { t } = useTranslation(["common", "agents"]);
   const [fromModel, setFromModel] = useState("");
   const [toModel, setToModel] = useState("");
   const [toVariant, setToVariant] = useState("__none");
@@ -53,26 +55,29 @@ export function BatchModelBar() {
     setToVariant("__none");
   };
 
+  const variantSuffix =
+    toVariant !== "__none" ? ` (${toVariant})` : "";
+
   return (
     <div className="flex items-center gap-3 rounded-lg border bg-muted/50 p-3">
-      <span className="text-sm font-medium whitespace-nowrap">批量替换</span>
+      <span className="text-sm font-medium whitespace-nowrap">
+        {t("agents:batchReplace.title")}
+      </span>
 
-      {/* 来源：仅显示当前在用模型 */}
       <ModelSelect
         value={fromModel}
         onValueChange={setFromModel}
-        placeholder="来源模型"
+        placeholder={t("agents:batchReplace.fromPlaceholder")}
         models={currentModels}
         triggerClassName="w-[240px]"
       />
 
       <span className="text-muted-foreground">→</span>
 
-      {/* 目标：显示全量可用模型 */}
       <ModelSelect
         value={toModel}
         onValueChange={setToModel}
-        placeholder="目标模型"
+        placeholder={t("agents:batchReplace.toPlaceholder")}
         triggerClassName="w-[240px]"
       />
 
@@ -94,15 +99,20 @@ export function BatchModelBar() {
         disabled={!fromModel || !toModel}
         onClick={() => setShowConfirm(true)}
       >
-        应用
+        {t("agents:batchReplace.applyButton")}
         {matchCount > 0 && ` (${matchCount})`}
       </Button>
 
       <ConfirmDialog
         open={showConfirm}
-        title="确认批量替换"
-        description={`将把所有使用 "${fromModel}" 的 agent/category（共 ${matchCount} 个）替换为 "${toModel}"${toVariant !== "__none" ? ` (${toVariant})` : ""}。此操作不可撤销。`}
-        confirmText="确认替换"
+        title={t("agents:batchReplace.confirm.title")}
+        description={t("agents:batchReplace.confirm.description", {
+          from: fromModel,
+          count: matchCount,
+          to: toModel,
+          variant: variantSuffix,
+        })}
+        confirmText={t("agents:batchReplace.confirm.confirmText")}
         onConfirm={handleApply}
         onCancel={() => setShowConfirm(false)}
         variant="destructive"

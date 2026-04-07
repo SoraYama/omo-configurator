@@ -1,0 +1,22 @@
+{
+  "title": "快照管理",
+  "empty": "暂无快照",
+  "saveButton": "+ 保存快照",
+  "actions": {
+    "rename": "改名",
+    "export": "导出",
+    "delete": "删除",
+    "restore": "恢复"
+  },
+  "dialogs": {
+    "restore": {
+      "title": "恢复快照",
+      "description": "确定要恢复快照 \"{{name}}\" 吗？当前配置将被覆盖。"
+    },
+    "rename": {
+      "title": "重命名快照",
+      "description": "修改快照文件夹名称，不能与已有快照重名。",
+      "label": "名称"
+    }
+  }
+}

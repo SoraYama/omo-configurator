@@ -1,0 +1,30 @@
+{
+  "title": "MCP Servers",
+  "addButton": "+ Add MCP",
+  "empty": "No MCP servers configured",
+  "status": {
+    "enabled": "Enabled",
+    "disabled": "Disabled"
+  },
+  "addForm": {
+    "namePlaceholder": "Server name",
+    "remoteServer": "Remote server",
+    "localServer": "Local server"
+  },
+  "editor": {
+    "keyPlaceholder": "Key",
+    "valuePlaceholder": "Value",
+    "addEntry": "+ Add",
+    "enabledLabel": "Enabled",
+    "commandHint": "Separate command and arguments with spaces",
+    "commandPlaceholder": "e.g. node server.js",
+    "envVarsLabel": "Environment Variables"
+  },
+  "dialogs": {
+    "delete": {
+      "title": "Delete MCP Server",
+      "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "confirmText": "Delete"
+    }
+  }
+}

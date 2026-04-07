@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -10,6 +11,7 @@ interface JsonPreviewProps {
 
 export function JsonPreview({ value, onSave, readOnly = false }: JsonPreviewProps) {
   const formatted = JSON.stringify(value, null, 2);
+  const { t } = useTranslation("common");
 
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(formatted);
@@ -28,7 +30,11 @@ export function JsonPreview({ value, onSave, readOnly = false }: JsonPreviewProp
       onSave?.(editValue);
       setEditing(false);
     } catch (e) {
-      setError(`JSON 格式错误: ${e instanceof Error ? e.message : String(e)}`);
+      setError(
+        t("jsonPreview.jsonError", {
+          message: e instanceof Error ? e.message : String(e),
+        }),
+      );
     }
   };
 
@@ -45,7 +51,7 @@ export function JsonPreview({ value, onSave, readOnly = false }: JsonPreviewProp
             className="absolute top-2 right-2"
             onClick={handleEdit}
           >
-            编辑
+            {t("jsonPreview.edit")}
           </Button>
         )}
       </div>
@@ -62,10 +68,10 @@ export function JsonPreview({ value, onSave, readOnly = false }: JsonPreviewProp
       {error && <p className="text-sm text-destructive">{error}</p>}
       <div className="flex gap-2">
         <Button size="sm" onClick={handleSave}>
-          保存
+          {t("actions.save")}
         </Button>
         <Button size="sm" variant="outline" onClick={() => setEditing(false)}>
-          取消
+          {t("actions.cancel")}
         </Button>
       </div>
     </div>

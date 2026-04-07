@@ -1,0 +1,24 @@
+{
+  "empty": "No providers yet",
+  "selectHint": "Select a provider to start editing",
+  "editor": {
+    "nameLabel": "Name",
+    "npmLabel": "NPM Package",
+    "npmPlaceholder": "e.g. @ai-sdk/openai-compatible",
+    "apiKeyLabel": "API Key",
+    "hideKey": "Hide",
+    "showKey": "Show",
+    "modelsLabel": "Model List",
+    "addModel": "+ Add Model",
+    "modelIdHeader": "Model ID",
+    "displayNameHeader": "Display Name",
+    "emptyModels": "No models yet"
+  },
+  "dialogs": {
+    "delete": {
+      "title": "Delete Provider",
+      "description": "Are you sure you want to delete \"{{name}}\"? The associated API key and model list will also be removed.",
+      "confirmText": "Delete"
+    }
+  }
+}

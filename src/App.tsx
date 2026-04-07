@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { TopBar } from "@/components/layout/TopBar";
 import { TabBar, type TabValue } from "@/components/layout/TabBar";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -12,11 +13,12 @@ import { useConfig } from "@/context/ConfigContext";
 export default function App() {
   const [tab, setTab] = useState<TabValue>("agents");
   const { loading, error } = useConfig();
+  const { t } = useTranslation("common");
 
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <p className="text-muted-foreground">加载配置中...</p>
+        <p className="text-muted-foreground">{t("app.loading")}</p>
       </div>
     );
   }
@@ -25,7 +27,7 @@ export default function App() {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center space-y-2">
-          <p className="text-destructive font-medium">加载失败</p>
+          <p className="text-destructive font-medium">{t("app.loadError")}</p>
           <p className="text-sm text-muted-foreground">{error}</p>
         </div>
       </div>

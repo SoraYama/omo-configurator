@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ interface KeyValueEditorProps {
 }
 
 function KeyValueEditor({ label, value, onChange }: KeyValueEditorProps) {
+  const { t } = useTranslation("mcp");
   const entries = Object.entries(value);
 
   const updateKey = (oldKey: string, newKey: string) => {
@@ -43,13 +45,13 @@ function KeyValueEditor({ label, value, onChange }: KeyValueEditorProps) {
       {entries.map(([k, v], i) => (
         <div key={i} className="flex gap-2">
           <Input
-            placeholder="键"
+            placeholder={t("editor.keyPlaceholder")}
             value={k}
             onChange={(e) => updateKey(k, e.target.value)}
             className="flex-1"
           />
           <Input
-            placeholder="值"
+            placeholder={t("editor.valuePlaceholder")}
             value={v}
             onChange={(e) => updateValue(k, e.target.value)}
             className="flex-1"
@@ -65,7 +67,7 @@ function KeyValueEditor({ label, value, onChange }: KeyValueEditorProps) {
         </div>
       ))}
       <Button variant="outline" size="sm" onClick={addEntry}>
-        + 添加
+        {t("editor.addEntry")}
       </Button>
     </div>
   );
@@ -78,6 +80,7 @@ interface McpEditorProps {
 }
 
 export function McpEditor({ name, server, onSave }: McpEditorProps) {
+  const { t } = useTranslation(["mcp", "common"]);
   const [draft, setDraft] = useState<McpServer>({ ...server });
 
   if (draft.type === "remote") {
@@ -105,10 +108,10 @@ export function McpEditor({ name, server, onSave }: McpEditorProps) {
               setDraft({ ...remote, enabled })
             }
           />
-          <Label>启用</Label>
+          <Label>{t("mcp:editor.enabledLabel")}</Label>
         </div>
         <Button size="sm" onClick={() => onSave(name, draft)}>
-          保存
+          {t("common:actions.save")}
         </Button>
       </div>
     );
@@ -127,12 +130,14 @@ export function McpEditor({ name, server, onSave }: McpEditorProps) {
               command: e.target.value.split(" ").filter(Boolean),
             })
           }
-          placeholder="例如: node server.js"
+          placeholder={t("mcp:editor.commandPlaceholder")}
         />
-        <p className="text-xs text-muted-foreground">用空格分隔命令和参数</p>
+        <p className="text-xs text-muted-foreground">
+          {t("mcp:editor.commandHint")}
+        </p>
       </div>
       <KeyValueEditor
-        label="环境变量"
+        label={t("mcp:editor.envVarsLabel")}
         value={local.environment ?? {}}
         onChange={(environment) => setDraft({ ...local, environment })}
       />
@@ -143,10 +148,10 @@ export function McpEditor({ name, server, onSave }: McpEditorProps) {
             setDraft({ ...local, enabled })
           }
         />
-        <Label>启用</Label>
+        <Label>{t("mcp:editor.enabledLabel")}</Label>
       </div>
       <Button size="sm" onClick={() => onSave(name, draft)}>
-        保存
+        {t("common:actions.save")}
       </Button>
     </div>
   );

@@ -1,0 +1,30 @@
+{
+  "title": "MCP 服务器",
+  "addButton": "+ 添加 MCP",
+  "empty": "暂无 MCP 服务器配置",
+  "status": {
+    "enabled": "启用",
+    "disabled": "禁用"
+  },
+  "addForm": {
+    "namePlaceholder": "服务器名称",
+    "remoteServer": "远程服务器",
+    "localServer": "本地服务器"
+  },
+  "editor": {
+    "keyPlaceholder": "键",
+    "valuePlaceholder": "值",
+    "addEntry": "+ 添加",
+    "enabledLabel": "启用",
+    "commandHint": "用空格分隔命令和参数",
+    "commandPlaceholder": "例如: node server.js",
+    "envVarsLabel": "环境变量"
+  },
+  "dialogs": {
+    "delete": {
+      "title": "删除 MCP 服务器",
+      "description": "确定要删除 \"{{name}}\" 吗？此操作不可撤销。",
+      "confirmText": "删除"
+    }
+  }
+}

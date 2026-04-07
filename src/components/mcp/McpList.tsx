@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -10,6 +11,7 @@ import type { McpServer } from "@/types/config";
 
 export function McpList() {
   const { openCodeConfig, updateMcpServer, deleteMcpServer } = useConfig();
+  const { t } = useTranslation(["mcp", "common"]);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
@@ -44,9 +46,9 @@ export function McpList() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">MCP 服务器</h3>
+        <h3 className="text-sm font-medium">{t("title")}</h3>
         <Button size="sm" onClick={() => setAdding(true)}>
-          + 添加 MCP
+          {t("addButton")}
         </Button>
       </div>
 
@@ -54,27 +56,27 @@ export function McpList() {
         <Card>
           <CardContent className="pt-4 space-y-3">
             <Input
-              placeholder="服务器名称"
+              placeholder={t("addForm.namePlaceholder")}
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
             />
             <div className="flex gap-2">
               <Button size="sm" onClick={() => handleAdd("remote")}>
-                远程服务器
+                {t("addForm.remoteServer")}
               </Button>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => handleAdd("local")}
               >
-                本地服务器
+                {t("addForm.localServer")}
               </Button>
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => setAdding(false)}
               >
-                取消
+                {t("common:actions.cancel")}
               </Button>
             </div>
           </CardContent>
@@ -96,7 +98,9 @@ export function McpList() {
                     server.enabled !== false ? "default" : "secondary"
                   }
                 >
-                  {server.enabled !== false ? "启用" : "禁用"}
+                  {server.enabled !== false
+                    ? t("status.enabled")
+                    : t("status.disabled")}
                 </Badge>
                 <Button
                   variant="ghost"
@@ -107,7 +111,7 @@ export function McpList() {
                     setDeleteTarget(name);
                   }}
                 >
-                  删除
+                  {t("dialogs.delete.confirmText")}
                 </Button>
               </div>
             </div>
@@ -122,15 +126,15 @@ export function McpList() {
 
       {Object.keys(mcpServers).length === 0 && !adding && (
         <p className="text-sm text-muted-foreground text-center py-8">
-          暂无 MCP 服务器配置
+          {t("empty")}
         </p>
       )}
 
       <ConfirmDialog
         open={deleteTarget !== null}
-        title="删除 MCP 服务器"
-        description={`确定要删除 "${deleteTarget}" 吗？此操作不可撤销。`}
-        confirmText="删除"
+        title={t("dialogs.delete.title")}
+        description={t("dialogs.delete.description", { name: deleteTarget })}
+        confirmText={t("dialogs.delete.confirmText")}
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}
         variant="destructive"

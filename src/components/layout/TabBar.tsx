@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export type TabValue = "agents" | "mcp" | "providers";
@@ -8,6 +9,8 @@ interface TabBarProps {
 }
 
 export function TabBar({ value, onValueChange }: TabBarProps) {
+  const { t } = useTranslation("common");
+
   return (
     <Tabs
       value={value}
@@ -15,9 +18,9 @@ export function TabBar({ value, onValueChange }: TabBarProps) {
       className="w-full"
     >
       <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="agents">Agents & Categories</TabsTrigger>
-        <TabsTrigger value="mcp">MCP 服务器</TabsTrigger>
-        <TabsTrigger value="providers">Providers</TabsTrigger>
+        <TabsTrigger value="agents">{t("tabs.agents")}</TabsTrigger>
+        <TabsTrigger value="mcp">{t("tabs.mcp")}</TabsTrigger>
+        <TabsTrigger value="providers">{t("tabs.providers")}</TabsTrigger>
       </TabsList>
     </Tabs>
   );

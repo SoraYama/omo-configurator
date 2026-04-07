@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Table,
   TableBody,
@@ -27,19 +28,22 @@ const VARIANTS = ["__none", "medium", "high", "xhigh", "max"];
 
 export function CategoryTable() {
   const { ohMyOpenCodeConfig, updateCategory } = useConfig();
+  const { t } = useTranslation(["common", "agents"]);
 
   const categories = ohMyOpenCodeConfig?.categories ?? {};
 
   return (
     <div>
-      <h3 className="text-sm font-medium mb-2">Categories</h3>
+      <h3 className="text-sm font-medium mb-2">
+        {t("agents:table.title.categories")}
+      </h3>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[180px]">名称</TableHead>
-            <TableHead>模型</TableHead>
-            <TableHead className="w-[120px]">Variant</TableHead>
-            <TableHead className="w-[60px]">推荐</TableHead>
+            <TableHead className="w-[180px]">{t("common:table.name")}</TableHead>
+            <TableHead>{t("common:table.model")}</TableHead>
+            <TableHead className="w-[120px]">{t("common:table.variant")}</TableHead>
+            <TableHead className="w-[60px]">{t("common:table.recommend")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -105,12 +109,17 @@ export function CategoryTable() {
                         {rec ? (
                           <div className="space-y-1 text-xs">
                             <p>
-                              推荐: {rec.model}
-                              {rec.variant ? ` (${rec.variant})` : ""}
+                              {t("agents:table.tooltip.recommended", {
+                                model:
+                                  rec.model +
+                                  (rec.variant ? ` (${rec.variant})` : ""),
+                              })}
                             </p>
                             {rec.fallbacks.length > 0 && (
                               <>
-                                <p className="font-medium">备选链:</p>
+                                <p className="font-medium">
+                                  {t("agents:table.tooltip.fallbackChain")}
+                                </p>
                                 <ol className="list-decimal list-inside">
                                   {rec.fallbacks.map((fb, i) => (
                                     <li key={i}>
@@ -122,11 +131,15 @@ export function CategoryTable() {
                               </>
                             )}
                             {!isRecommended && (
-                              <p className="text-orange-400">点击应用推荐配置</p>
+                              <p className="text-orange-400">
+                                {t("agents:table.tooltip.applyRecommended")}
+                              </p>
                             )}
                           </div>
                         ) : (
-                          <p className="text-xs">无推荐配置</p>
+                          <p className="text-xs">
+                            {t("agents:table.tooltip.noRecommendation")}
+                          </p>
                         )}
                       </TooltipContent>
                     </Tooltip>

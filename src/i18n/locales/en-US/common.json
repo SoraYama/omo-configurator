@@ -1,0 +1,52 @@
+{
+  "app": {
+    "name": "omo-configurator",
+    "loading": "Loading configuration...",
+    "loadError": "Load failed",
+    "checkUpdate": "Check for updates",
+    "checking": "Checking...",
+    "updateAvailable": "→ v{{version}} available, click to upgrade",
+    "appVersionTitle": "This app (omo-configurator) version",
+    "pluginVersionTitle": "npm package oh-my-openagent version",
+    "connectedProviders": "Connected: {{names}}",
+    "externalModelsLoading": "Loading external models...",
+    "externalModelsLoaded": "{{count}} external models"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "apply": "Apply",
+    "export": "Export",
+    "rename": "Rename",
+    "add": "+ Add",
+    "hide": "Hide",
+    "show": "Show"
+  },
+  "tabs": {
+    "agents": "Agents & Categories",
+    "mcp": "MCP Servers",
+    "providers": "Providers"
+  },
+  "table": {
+    "name": "Name",
+    "model": "Model",
+    "variant": "Variant",
+    "recommend": "Rec."
+  },
+  "select": {
+    "placeholder": "Select...",
+    "none": "-"
+  },
+  "modelSelect": {
+    "placeholder": "Select model",
+    "searchPlaceholder": "Search models...",
+    "noResult": "No matching models found"
+  },
+  "jsonPreview": {
+    "edit": "Edit",
+    "jsonError": "JSON format error: {{message}}"
+  }
+}
