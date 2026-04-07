@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- 深色圆角背景 -->
+  <rect width="1024" height="1024" rx="224" fill="#171717"/>
+  
+  <!-- 齿轮主体 (代表 Configurator / 设置) -->
+  <g fill="#fafafa">
+    <rect x="432" y="144" width="160" height="736" rx="40" />
+    <rect x="432" y="144" width="160" height="736" rx="40" transform="rotate(45 512 512)" />
+    <rect x="432" y="144" width="160" height="736" rx="40" transform="rotate(90 512 512)" />
+    <rect x="432" y="144" width="160" height="736" rx="40" transform="rotate(135 512 512)" />
+    <circle cx="512" cy="512" r="280" />
+  </g>
+  
+  <!-- 齿轮内孔 -->
+  <circle cx="512" cy="512" r="160" fill="#171717" />
+  
+  <!-- 终端提示符 > (代表 Code / OpenCode) -->
+  <path d="M 462 412 L 562 512 L 462 612" stroke="#fafafa" stroke-width="56" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+</svg>

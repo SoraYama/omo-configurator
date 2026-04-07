@@ -19,6 +19,7 @@ pub fn run() {
             snapshots::restore_snapshot,
             snapshots::delete_snapshot,
             snapshots::export_snapshot,
+            snapshots::rename_snapshot,
         ])
         .run(tauri::generate_context!())
         .expect("运行 Tauri 应用失败");

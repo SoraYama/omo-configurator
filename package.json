@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
+    "icons": "tauri icon src-tauri/icons/app-icon.svg && cp src-tauri/icons/app-icon.svg public/app-icon.svg",
     "test": "vitest run",
     "test:watch": "vitest"
   },

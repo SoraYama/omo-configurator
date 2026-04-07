@@ -21,6 +21,10 @@ export async function deleteSnapshot(name: string): Promise<void> {
   return invoke("delete_snapshot", { name });
 }
 
+export async function renameSnapshot(from: string, to: string): Promise<void> {
+  return invoke("rename_snapshot", { from, to });
+}
+
 export async function exportSnapshot(name: string): Promise<string> {
   return invoke<string>("export_snapshot", { name });
 }
