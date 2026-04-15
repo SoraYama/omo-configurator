@@ -7,6 +7,16 @@ fn config_dir() -> PathBuf {
     home.join(".config").join("opencode")
 }
 
+/// 新版 oh-my-open(agent) 配置：`~/.config/opencode/oh-my-openagent.json`（优先）
+fn oh_my_openagent_path() -> PathBuf {
+    config_dir().join("oh-my-openagent.json")
+}
+
+/// 旧版路径：`~/.config/opencode/oh-my-opencode.json`
+fn oh_my_legacy_path() -> PathBuf {
+    config_dir().join("oh-my-opencode.json")
+}
+
 fn auth_file() -> PathBuf {
     let home = dirs::home_dir().expect("无法获取 home 目录");
     home.join(".local")
@@ -26,18 +36,48 @@ pub fn read_auth() -> Result<String, String> {
 
 #[tauri::command]
 pub fn read_config(filename: &str) -> Result<String, String> {
+    if filename == "oh-my-opencode.json" {
+        let new_path = oh_my_openagent_path();
+        if new_path.exists() {
+            return fs::read_to_string(&new_path).map_err(|e| {
+                format!("读取 {} 失败: {}", filename, e)
+            });
+        }
+        let legacy = oh_my_legacy_path();
+        if legacy.exists() {
+            return fs::read_to_string(&legacy).map_err(|e| {
+                format!("读取 {} 失败: {}", filename, e)
+            });
+        }
+        return Ok("{}".to_string());
+    }
     let path = config_dir().join(filename);
     fs::read_to_string(&path).map_err(|e| format!("读取 {} 失败: {}", filename, e))
 }
 
 #[tauri::command]
 pub fn write_config(filename: &str, content: &str) -> Result<(), String> {
+    if filename == "oh-my-opencode.json" {
+        let path = oh_my_openagent_path();
+        if let Some(parent) = path.parent() {
+            fs::create_dir_all(parent)
+                .map_err(|e| format!("创建配置目录失败: {}", e))?;
+        }
+        return fs::write(&path, content)
+            .map_err(|e| format!("写入 {} 失败: {}", filename, e));
+    }
     let path = config_dir().join(filename);
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent).map_err(|e| format!("创建配置目录失败: {}", e))?;
+    }
     fs::write(&path, content).map_err(|e| format!("写入 {} 失败: {}", filename, e))
 }
 
 #[tauri::command]
 pub fn config_file_exists(filename: &str) -> bool {
+    if filename == "oh-my-opencode.json" {
+        return oh_my_openagent_path().exists() || oh_my_legacy_path().exists();
+    }
     config_dir().join(filename).exists()
 }
 

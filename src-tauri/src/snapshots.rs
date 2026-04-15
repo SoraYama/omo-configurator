@@ -68,11 +68,15 @@ pub fn save_snapshot(name: &str) -> Result<(), String> {
     let snap_dir = snapshots_dir().join(name);
     fs::create_dir_all(&snap_dir).map_err(|e| format!("创建快照目录失败: {}", e))?;
 
-    for filename in &["opencode.json", "oh-my-opencode.json"] {
-        let src = config_dir.join(filename);
+    let copies = [
+        (config_dir.join("opencode.json"), "opencode.json"),
+        (config_dir.join("oh-my-openagent.json"), "oh-my-openagent.json"),
+        (config_dir.join("oh-my-opencode.json"), "oh-my-opencode.json"),
+    ];
+    for (src, name) in copies {
         if src.exists() {
-            let dst = snap_dir.join(filename);
-            fs::copy(&src, &dst).map_err(|e| format!("复制 {} 失败: {}", filename, e))?;
+            let dst = snap_dir.join(name);
+            fs::copy(&src, &dst).map_err(|e| format!("复制 {} 失败: {}", name, e))?;
         }
     }
     Ok(())
@@ -88,11 +92,21 @@ pub fn restore_snapshot(name: &str) -> Result<(), String> {
     if !snap_dir.exists() {
         return Err(format!("快照 {} 不存在", name));
     }
-    for filename in &["opencode.json", "oh-my-opencode.json"] {
-        let src = snap_dir.join(filename);
+    let restores = [
+        ("opencode.json", config_dir.join("opencode.json")),
+        (
+            "oh-my-openagent.json",
+            config_dir.join("oh-my-openagent.json"),
+        ),
+        ("oh-my-opencode.json", config_dir.join("oh-my-opencode.json")),
+    ];
+    for (name, dst) in restores {
+        let src = snap_dir.join(name);
         if src.exists() {
-            let dst = config_dir.join(filename);
-            fs::copy(&src, &dst).map_err(|e| format!("恢复 {} 失败: {}", filename, e))?;
+            if let Some(parent) = dst.parent() {
+                fs::create_dir_all(parent).map_err(|e| format!("创建目录失败: {}", e))?;
+            }
+            fs::copy(&src, &dst).map_err(|e| format!("恢复 {} 失败: {}", name, e))?;
         }
     }
     Ok(())
@@ -134,7 +148,11 @@ pub fn export_snapshot(name: &str) -> Result<String, String> {
         return Err(format!("快照 {} 不存在", name));
     }
     let mut export_data = serde_json::Map::new();
-    for filename in &["opencode.json", "oh-my-opencode.json"] {
+    for filename in &[
+        "opencode.json",
+        "oh-my-openagent.json",
+        "oh-my-opencode.json",
+    ] {
         let path = snap_dir.join(filename);
         if path.exists() {
             let content = fs::read_to_string(&path)
