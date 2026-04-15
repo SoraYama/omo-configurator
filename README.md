@@ -1,12 +1,12 @@
 # OmO Configurator
 
-A desktop GUI for visually editing `opencode.json` and `oh-my-opencode.json`.
+A desktop GUI for visually editing `opencode.json` and the oh-my agent config (`oh-my-openagent.json`, with legacy support for `oh-my-opencode.json`).
 
 **Other languages:** [简体中文](README.zh-CN.md)
 
 ## Motivation
 
-OpenCode and oh-my-opencode ship large, nested JSON configs. Hand-editing them in a text editor is easy to get wrong: a missing comma, a mistyped model id, or an inconsistent MCP block can break a workflow silently. This app exists to make that work safer and faster—structured forms instead of raw JSON, visibility into recommended models, bulk changes when you switch providers, and snapshots so you can roll back after experiments. It is a companion for people who live in these configs daily and want fewer surprises.
+OpenCode and oh-my agent configs ship large, nested JSON configs. Hand-editing them in a text editor is easy to get wrong: a missing comma, a mistyped model id, or an inconsistent MCP block can break a workflow silently. This app exists to make that work safer and faster—structured forms instead of raw JSON, visibility into recommended models, bulk changes when you switch providers, and snapshots so you can roll back after experiments. It is a companion for people who live in these configs daily and want fewer surprises.
 
 ## Stack
 
@@ -75,7 +75,7 @@ tnpm run tauri build
 
 ### Version check
 
-- Top bar shows the current oh-my-opencode plugin version
+- Top bar shows the current **oh-my-openagent** npm plugin version (from `opencode.json` `plugin` entries)
 - One-click check for the latest npm version; when an update exists, bump the version in config in one step
 
 ## Config file locations
@@ -83,5 +83,7 @@ tnpm run tauri build
 | File | Path |
 |------|------|
 | opencode.json | `~/.config/opencode/opencode.json` |
-| oh-my-opencode.json | `~/.config/opencode/oh-my-opencode.json` |
+| oh-my agent config | `~/.config/opencode/oh-my-openagent.json` |
 | Snapshots | `~/.config/opencode/.snapshots/` |
+
+**Oh-my config (agents / categories):** The app reads **`oh-my-openagent.json` first**, then falls back to **`oh-my-opencode.json`** in the same directory if the new file is missing. Saves always go to **`oh-my-openagent.json`**. Snapshots include both filenames when present, plus `opencode.json`.
