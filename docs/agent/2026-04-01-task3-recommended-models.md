@@ -6,7 +6,7 @@
 
 ## 测试结果
 
-- 命令：`tnpm run test -- tests/lib/recommended-models.test.ts`
+- 命令：`npm run test -- tests/lib/recommended-models.test.ts`
 - 结果：**8 passed / 8**（Vitest v4.1.2）
 - TDD：先仅添加测试时因无法解析 `@/lib/recommended-models` 导致套件失败；实现模块后全部通过。
 

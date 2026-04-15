@@ -20,26 +20,27 @@ OpenCode 与 oh-my（agent 配置）往往是体积大、层级深的 JSON。纯
 ### 前置条件
 
 - Node.js 20+
+- **npm**（安装依赖与运行脚本请使用 npm；本项目不使用 tnpm）
 - Rust 1.88+
 - macOS / Windows / Linux（需要系统 WebView 运行时）
 
 ### 启动开发环境
 
 ```bash
-tnpm install
-tnpm run tauri dev
+npm install
+npm run tauri dev
 ```
 
 ### 运行测试
 
 ```bash
-tnpm run test
+npm run test
 ```
 
 ### 构建生产包
 
 ```bash
-tnpm run tauri build
+npm run tauri build
 ```
 
 ## 功能

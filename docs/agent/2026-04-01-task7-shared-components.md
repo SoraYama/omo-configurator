@@ -12,7 +12,7 @@
 
 ## 编译结果
 
-`tnpm run build`（`tsc && vite build`）**成功**，无 TypeScript 错误。
+`npm run build`（`tsc && vite build`）**成功**，无 TypeScript 错误。
 
 ## 自我 review
 

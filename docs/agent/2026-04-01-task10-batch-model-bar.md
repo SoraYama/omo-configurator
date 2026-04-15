@@ -7,7 +7,7 @@
 ## 测试结果
 
 ```bash
-tnpm run test -- tests/components/BatchModelBar.test.tsx
+npm run test -- tests/components/BatchModelBar.test.tsx
 ```
 
 - 1 个测试文件，1 个用例，全部通过。
@@ -15,7 +15,7 @@ tnpm run test -- tests/components/BatchModelBar.test.tsx
 ## 编译结果
 
 ```bash
-tnpm run build
+npm run build
 ```
 
 - `tsc && vite build` 成功，无 TypeScript 错误。

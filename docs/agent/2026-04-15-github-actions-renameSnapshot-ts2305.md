@@ -21,13 +21,13 @@ git show v0.1.2:src/lib/snapshots.ts   # 无 renameSnapshot
 git show origin/master:src/lib/snapshots.ts   # 有 renameSnapshot
 ```
 
-本地/当前 `master` 执行 `tnpm run build` 应能通过。
+本地/当前 `master` 执行 `npm run build` 应能通过。
 
 ## 处理建议
 
 1. **新发布**：在包含 `renameSnapshot` 的提交上打新标签（例如 `v0.1.3`，与当前 `package.json` 版本一致），推送标签触发 Release。
 2. **若 `v0.1.2` 尚未对外发布且可改写历史**：删除远程 `v0.1.2` 标签并在正确提交上重建（需谨慎，已克隆者需同步）。
-3. **流程上**：避免在「仅改 UI 引用、未改 lib 导出」的中间提交上打发布标签；或打标签前本地跑一遍 `tnpm run build`。
+3. **流程上**：避免在「仅改 UI 引用、未改 lib 导出」的中间提交上打发布标签；或打标签前本地跑一遍 `npm run build`。
 
 ## 工作流说明
 

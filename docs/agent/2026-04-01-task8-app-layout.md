@@ -21,9 +21,9 @@
 
 ## 编译结果
 
-- 命令：`tnpm run build`（`tsc && vite build`）
+- 命令：`npm run build`（`tsc && vite build`）
 - 结果：**成功**（exit code 0）
-- **子代理复核**（2026-04-01）：再次执行 `tnpm run build`，`tsc` 与 `vite build` 均通过，约 1874 modules transformed，无 TypeScript 报错。
+- **子代理复核**（2026-04-01）：再次执行 `npm run build`，`tsc` 与 `vite build` 均通过，约 1874 modules transformed，无 TypeScript 报错。
 
 ## 自我 review
 

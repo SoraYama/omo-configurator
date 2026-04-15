@@ -7,7 +7,7 @@
 ## 测试结果
 
 - **Vitest：** `tests/lib/config.test.ts` — **14 / 14 通过**（原 5 个类型烟雾测试 + 新增 9 个）
-- 命令：`tnpm run test -- tests/lib/config.test.ts`
+- 命令：`npm run test -- tests/lib/config.test.ts`
 
 说明：任务要求先在无 `src/lib/config.ts` 时跑一次失败用例；本次为一次性完成实现后再跑测，未单独保留「模块缺失」的失败日志。若需严格复现 TDD 红绿流程，可先删除 `config.ts` 再跑同一命令验证导入失败。
 

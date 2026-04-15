@@ -20,26 +20,27 @@ OpenCode and oh-my agent configs ship large, nested JSON configs. Hand-editing t
 ### Prerequisites
 
 - Node.js 20+
+- **npm** (use npm for install and scripts; this project does not use `tnpm`)
 - Rust 1.88+
 - macOS / Windows / Linux (system WebView runtime required)
 
 ### Run the dev app
 
 ```bash
-tnpm install
-tnpm run tauri dev
+npm install
+npm run tauri dev
 ```
 
 ### Run tests
 
 ```bash
-tnpm run test
+npm run test
 ```
 
 ### Production build
 
 ```bash
-tnpm run tauri build
+npm run tauri build
 ```
 
 ## Features
