@@ -131,6 +131,9 @@ pub fn read_config(filename: &str) -> Result<String, String> {
 #[tauri::command]
 pub fn write_config(filename: &str, content: &str) -> Result<(), String> {
     let path = config_dir().join(filename);
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent).map_err(|e| format!("创建配置目录失败: {}", e))?;
+    }
     fs::write(&path, content).map_err(|e| format!("写入 {} 失败: {}", filename, e))
 }
 

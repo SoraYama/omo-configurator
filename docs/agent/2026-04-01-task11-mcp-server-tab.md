@@ -6,12 +6,12 @@
 
 ## 测试结果
 
-- 命令：`tnpm run test -- tests/components/McpList.test.tsx`
+- 命令：`npm run test -- tests/components/McpList.test.tsx`
 - 结果：2/2 通过（渲染卡片名称、显示类型标签）
 
 ## 编译结果
 
-- 命令：`tnpm run build`（`tsc && vite build`）
+- 命令：`npm run build`（`tsc && vite build`）
 - 结果：成功
 
 ## 修改的文件

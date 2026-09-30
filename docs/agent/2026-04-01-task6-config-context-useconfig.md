@@ -6,8 +6,8 @@
 
 ## 测试结果
 
-- `tnpm run test -- tests/hooks/useConfig.test.tsx`：**2 passed / 2**
-- `tnpm run build`（`tsc && vite build`）：**通过**
+- `npm run test -- tests/hooks/useConfig.test.tsx`：**2 passed / 2**
+- `npm run build`（`tsc && vite build`）：**通过**
 
 ## 修改的文件（当前仓库状态）
 

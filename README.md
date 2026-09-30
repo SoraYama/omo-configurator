@@ -6,7 +6,7 @@ A desktop GUI for visually editing OpenCode's `opencode.json` and the oh-my-open
 
 ## Motivation
 
-OpenCode and oh-my-opencode ship large, nested JSON configs. Hand-editing them in a text editor is easy to get wrong: a missing comma, a mistyped model id, or an inconsistent MCP block can break a workflow silently. This app exists to make that work safer and faster—structured forms instead of raw JSON, visibility into recommended models, bulk changes when you switch providers, and snapshots so you can roll back after experiments. It is a companion for people who live in these configs daily and want fewer surprises.
+OpenCode and oh-my agent configs ship large, nested JSON configs. Hand-editing them in a text editor is easy to get wrong: a missing comma, a mistyped model id, or an inconsistent MCP block can break a workflow silently. This app exists to make that work safer and faster—structured forms instead of raw JSON, visibility into recommended models, bulk changes when you switch providers, and snapshots so you can roll back after experiments. It is a companion for people who live in these configs daily and want fewer surprises.
 
 ## Stack
 
@@ -20,26 +20,27 @@ OpenCode and oh-my-opencode ship large, nested JSON configs. Hand-editing them i
 ### Prerequisites
 
 - Node.js 20+
+- **npm** (use npm for install and scripts; this project does not use `tnpm`)
 - Rust 1.88+
 - macOS / Windows / Linux (system WebView runtime required)
 
 ### Run the dev app
 
 ```bash
-tnpm install
-tnpm run tauri dev
+npm install
+npm run tauri dev
 ```
 
 ### Run tests
 
 ```bash
-tnpm run test
+npm run test
 ```
 
 ### Production build
 
 ```bash
-tnpm run tauri build
+npm run tauri build
 ```
 
 ## Features
@@ -75,7 +76,7 @@ tnpm run tauri build
 
 ### Version check
 
-- Top bar shows the current oh-my-openagent plugin version and which plugin config file is being edited
+- Top bar shows the current **oh-my-openagent** npm plugin version (from `opencode.json` `plugin` entries) and which plugin config file is being edited
 - One-click check for the latest npm version; when an update exists, bump the version in config in one step. Upgrading from < 5 copies your agents and categories into `~/.omo/omo.jsonc` first, because the plugin's own 5.x migration drops them
 
 ## Config file locations
@@ -86,3 +87,5 @@ tnpm run tauri build
 | Plugin config (plugin ≥ 5, or unpinned) | `~/.omo/omo.jsonc` (settings in the `"[opencode]"` block, `reasoning` instead of `variant`) |
 | Plugin config (plugin < 5) | `~/.config/opencode/oh-my-opencode.json[c]`, else `oh-my-openagent.json[c]` |
 | Snapshots | `~/.config/opencode/.snapshots/` |
+
+**Plugin config (agents / categories):** The app follows the plugin version pinned in `opencode.json`. For plugin ≥ 5 (or an unpinned version) it reads and writes `~/.omo/omo.jsonc`, falling back to `omo.json`; the legacy files are only imported once by the plugin's own migration. For plugin < 5 it uses the same lookup order as the plugin: `oh-my-opencode.jsonc`, `oh-my-opencode.json`, `oh-my-openagent.jsonc`, `oh-my-openagent.json`. Edits are applied in place, so JSONC comments are kept. Snapshots include every one of these files that exists, plus `opencode.json[c]`.

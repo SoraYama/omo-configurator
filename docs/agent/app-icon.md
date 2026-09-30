@@ -16,12 +16,12 @@
 
 ## 构建流程
 
-修改 `app-icon.svg` 后执行（请使用 **tnpm**）：
+修改 `app-icon.svg` 后执行（请使用 **npm**）：
 
 ```bash
-tnpm run icons
+npm run icons
 ```
 
 该脚本会：用 `tauri icon` 根据 `src-tauri/icons/app-icon.svg` 生成各平台位图，并把同一 SVG 同步到 `public/app-icon.svg`（供 Vite 页签图标）。
 
-`tauri build` / `tauri dev` 会按 `tauri.conf.json` 的 `bundle.icon` 使用 `src-tauri/icons` 下已生成文件，无需在每次 `tnpm run build` 前强制跑 `icons`，除非更新了源 SVG。
+`tauri build` / `tauri dev` 会按 `tauri.conf.json` 的 `bundle.icon` 使用 `src-tauri/icons` 下已生成文件，无需在每次 `npm run build` 前强制跑 `icons`，除非更新了源 SVG。

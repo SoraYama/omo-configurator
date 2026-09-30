@@ -92,14 +92,14 @@ opencode-configurator/
 
 ```bash
 cd /Users/sorayama/Projects/personal/opencode-configurator
-tnpm create tauri-app@latest . -- --template react-ts --manager npm --yes
+npm create tauri-app@latest . -- --template react-ts --manager npm --yes
 ```
 
 如果提示目录不为空（因为 docs 和 .claude 已存在），选择继续。如果 `create-tauri-app` 不支持 `.` 目录参数，则在临时目录创建后复制过来：
 
 ```bash
 cd /tmp
-tnpm create tauri-app@latest opencode-configurator-init -- --template react-ts --manager npm --yes
+npm create tauri-app@latest opencode-configurator-init -- --template react-ts --manager npm --yes
 cp -rn /tmp/opencode-configurator-init/* /Users/sorayama/Projects/personal/opencode-configurator/
 cp -rn /tmp/opencode-configurator-init/.* /Users/sorayama/Projects/personal/opencode-configurator/ 2>/dev/null || true
 rm -rf /tmp/opencode-configurator-init
@@ -110,15 +110,15 @@ cd /Users/sorayama/Projects/personal/opencode-configurator
 
 ```bash
 cd /Users/sorayama/Projects/personal/opencode-configurator
-tnpm install
+npm install
 ```
 
 - [ ] **Step 3: 安装 shadcn/ui 和 Tailwind CSS**
 
 ```bash
-tnpm install -D tailwindcss @tailwindcss/vite
-tnpm install tailwind-merge clsx class-variance-authority lucide-react
-tnpm install @radix-ui/react-slot
+npm install -D tailwindcss @tailwindcss/vite
+npm install tailwind-merge clsx class-variance-authority lucide-react
+npm install @radix-ui/react-slot
 ```
 
 在 `src/index.css` 顶部添加：
@@ -166,7 +166,7 @@ npx shadcn@latest add button table dialog select tabs input label badge tooltip 
 - [ ] **Step 5: 安装测试依赖**
 
 ```bash
-tnpm install -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom @vitest/ui
+npm install -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom @vitest/ui
 ```
 
 创建 `vitest.config.ts`：
@@ -267,7 +267,7 @@ serde_json = "1"
 
 ```bash
 cd /Users/sorayama/Projects/personal/opencode-configurator
-tnpm run tauri dev
+npm run tauri dev
 ```
 
 预期：Tauri 窗口打开，显示默认 React 页面。关闭窗口。
@@ -472,7 +472,7 @@ describe("config types", () => {
 - [ ] **Step 3: 运行测试验证通过**
 
 ```bash
-tnpm run test -- tests/lib/config.test.ts
+npm run test -- tests/lib/config.test.ts
 ```
 
 预期：5 个测试全部 PASS。
@@ -551,7 +551,7 @@ describe("recommended-models", () => {
 - [ ] **Step 2: 运行测试确认失败**
 
 ```bash
-tnpm run test -- tests/lib/recommended-models.test.ts
+npm run test -- tests/lib/recommended-models.test.ts
 ```
 
 预期：FAIL — 模块不存在。
@@ -709,7 +709,7 @@ export function getRecommendation(
 - [ ] **Step 4: 运行测试确认通过**
 
 ```bash
-tnpm run test -- tests/lib/recommended-models.test.ts
+npm run test -- tests/lib/recommended-models.test.ts
 ```
 
 预期：8 个测试全部 PASS。
@@ -842,7 +842,7 @@ describe("getOhMyOpenCodeVersion", () => {
 - [ ] **Step 2: 运行测试确认失败**
 
 ```bash
-tnpm run test -- tests/lib/config.test.ts
+npm run test -- tests/lib/config.test.ts
 ```
 
 预期：新增的 describe 块全部 FAIL（模块不存在）。
@@ -892,7 +892,7 @@ export function getOhMyOpenCodeVersion(
 - [ ] **Step 4: 运行测试确认通过**
 
 ```bash
-tnpm run test -- tests/lib/config.test.ts
+npm run test -- tests/lib/config.test.ts
 ```
 
 预期：所有测试 PASS。
@@ -1222,7 +1222,7 @@ describe("useConfig", () => {
 - [ ] **Step 2: 运行测试确认失败**
 
 ```bash
-tnpm run test -- tests/hooks/useConfig.test.tsx
+npm run test -- tests/hooks/useConfig.test.tsx
 ```
 
 预期：FAIL — 模块不存在。
@@ -1555,7 +1555,7 @@ export function generateSnapshotName(): string {
 - [ ] **Step 5: 运行测试确认通过**
 
 ```bash
-tnpm run test -- tests/hooks/useConfig.test.tsx
+npm run test -- tests/hooks/useConfig.test.tsx
 ```
 
 预期：测试 PASS。
@@ -2179,7 +2179,7 @@ export function ProviderList() {
 - [ ] **Step 7: 验证应用能编译运行**
 
 ```bash
-tnpm run tauri dev
+npm run tauri dev
 ```
 
 预期：窗口打开，显示 TopBar + TabBar + Sidebar + 占位内容。
@@ -2250,7 +2250,7 @@ describe("AgentTable", () => {
 - [ ] **Step 2: 运行测试确认失败**
 
 ```bash
-tnpm run test -- tests/components/AgentTable.test.tsx
+npm run test -- tests/components/AgentTable.test.tsx
 ```
 
 预期：FAIL（AgentTable 是占位组件）。
@@ -2586,7 +2586,7 @@ export function CategoryTable() {
 - [ ] **Step 5: 运行测试确认通过**
 
 ```bash
-tnpm run test -- tests/components/AgentTable.test.tsx
+npm run test -- tests/components/AgentTable.test.tsx
 ```
 
 预期：2 个测试 PASS。
@@ -2653,7 +2653,7 @@ describe("BatchModelBar", () => {
 - [ ] **Step 2: 运行测试确认失败**
 
 ```bash
-tnpm run test -- tests/components/BatchModelBar.test.tsx
+npm run test -- tests/components/BatchModelBar.test.tsx
 ```
 
 预期：FAIL。
@@ -2800,7 +2800,7 @@ export function BatchModelBar() {
 - [ ] **Step 4: 运行测试确认通过**
 
 ```bash
-tnpm run test -- tests/components/BatchModelBar.test.tsx
+npm run test -- tests/components/BatchModelBar.test.tsx
 ```
 
 预期：PASS。
@@ -2874,7 +2874,7 @@ describe("McpList", () => {
 - [ ] **Step 2: 运行测试确认失败**
 
 ```bash
-tnpm run test -- tests/components/McpList.test.tsx
+npm run test -- tests/components/McpList.test.tsx
 ```
 
 预期：FAIL。
@@ -3189,7 +3189,7 @@ export function McpList() {
 - [ ] **Step 5: 运行测试确认通过**
 
 ```bash
-tnpm run test -- tests/components/McpList.test.tsx
+npm run test -- tests/components/McpList.test.tsx
 ```
 
 预期：2 个测试 PASS。
@@ -3271,7 +3271,7 @@ describe("ProviderEditor", () => {
 - [ ] **Step 2: 运行测试确认失败**
 
 ```bash
-tnpm run test -- tests/components/ProviderEditor.test.tsx
+npm run test -- tests/components/ProviderEditor.test.tsx
 ```
 
 预期：FAIL。
@@ -3533,7 +3533,7 @@ export function ProviderList() {
 - [ ] **Step 5: 运行测试确认通过**
 
 ```bash
-tnpm run test -- tests/components/ProviderEditor.test.tsx
+npm run test -- tests/components/ProviderEditor.test.tsx
 ```
 
 预期：2 个测试 PASS。
@@ -3648,20 +3648,20 @@ git commit -m "style: 配置全局样式、窗口尺寸和应用标题"
 ### 启动开发环境
 
 ```bash
-tnpm install
-tnpm run tauri dev
+npm install
+npm run tauri dev
 ```
 
 ### 运行测试
 
 ```bash
-tnpm run test
+npm run test
 ```
 
 ### 构建
 
 ```bash
-tnpm run tauri build
+npm run tauri build
 ```
 
 ## 功能
@@ -3677,7 +3677,7 @@ tnpm run tauri build
 - [ ] **Step 2: 运行全量测试**
 
 ```bash
-tnpm run test
+npm run test
 ```
 
 预期：所有测试 PASS。
@@ -3685,7 +3685,7 @@ tnpm run test
 - [ ] **Step 3: 验证应用可以编译运行**
 
 ```bash
-tnpm run tauri dev
+npm run tauri dev
 ```
 
 预期：Tauri 窗口打开，可以看到完整的 UI 布局和所有功能。

@@ -10,5 +10,5 @@
 ## 验证
 
 - `cargo check --manifest-path src-tauri/Cargo.toml`
-- `tnpm run build`
-- `tnpm test`
+- `npm run build`
+- `npm test`

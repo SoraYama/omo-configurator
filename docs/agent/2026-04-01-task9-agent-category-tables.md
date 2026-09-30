@@ -7,7 +7,7 @@
 ## 测试结果
 
 ```text
-tnpm run test -- tests/components/AgentTable.test.tsx
+npm run test -- tests/components/AgentTable.test.tsx
 Test Files  1 passed (1)
 Tests  2 passed (2)
 ```
@@ -15,7 +15,7 @@ Tests  2 passed (2)
 ## 编译结果
 
 ```text
-tnpm run build
+npm run build
 tsc && vite build — 成功
 ```
 

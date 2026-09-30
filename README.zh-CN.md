@@ -6,7 +6,7 @@
 
 ## 创作动机
 
-OpenCode 与 oh-my-opencode 的配置往往是体积大、层级深的 JSON。纯文本手改容易出错：漏逗号、模型 ID 写错、MCP 段落不一致，都可能让工作流在不知不觉中坏掉。本工具希望把这类日常维护变得更稳、更快：用结构化表单替代盲改 JSON，一眼看清与官方推荐是否一致，换厂商时能批量调整模型，再配合快照在试错后快速回滚。它面向需要长期维护这些配置、又希望少踩坑的使用者。
+OpenCode 与 oh-my（agent 配置）往往是体积大、层级深的 JSON。纯文本手改容易出错：漏逗号、模型 ID 写错、MCP 段落不一致，都可能让工作流在不知不觉中坏掉。本工具希望把这类日常维护变得更稳、更快：用结构化表单替代盲改 JSON，一眼看清与官方推荐是否一致，换厂商时能批量调整模型，再配合快照在试错后快速回滚。它面向需要长期维护这些配置、又希望少踩坑的使用者。
 
 ## 技术栈
 
@@ -20,26 +20,27 @@ OpenCode 与 oh-my-opencode 的配置往往是体积大、层级深的 JSON。�
 ### 前置条件
 
 - Node.js 20+
+- **npm**（安装依赖与运行脚本请使用 npm；本项目不使用 tnpm）
 - Rust 1.88+
 - macOS / Windows / Linux（需要系统 WebView 运行时）
 
 ### 启动开发环境
 
 ```bash
-tnpm install
-tnpm run tauri dev
+npm install
+npm run tauri dev
 ```
 
 ### 运行测试
 
 ```bash
-tnpm run test
+npm run test
 ```
 
 ### 构建生产包
 
 ```bash
-tnpm run tauri build
+npm run tauri build
 ```
 
 ## 功能
@@ -69,7 +70,7 @@ tnpm run tauri build
 - 导出快照为 JSON 文件
 
 ### 版本检查
-- 顶栏显示当前 oh-my-openagent 插件版本，以及正在编辑的插件配置文件
+- 顶栏显示当前 **oh-my-openagent** npm 插件版本（来自 `opencode.json` 的 `plugin` 字段），以及正在编辑的插件配置文件
 - 一键检查 npm 最新版本，有更新时可一键升级配置中的版本号。从 <5 升级时会先把 agents 与 categories 写入 `~/.omo/omo.jsonc`，因为插件自带的 5.x 迁移会丢弃它们
 
 ## 配置文件位置
@@ -80,3 +81,5 @@ tnpm run tauri build
 | 插件配置（插件 ≥5 或未固定版本） | `~/.omo/omo.jsonc`（设置位于 `"[opencode]"` 块，使用 `reasoning` 代替 `variant`） |
 | 插件配置（插件 <5） | `~/.config/opencode/oh-my-opencode.json[c]`，否则 `oh-my-openagent.json[c]` |
 | 快照目录 | `~/.config/opencode/.snapshots/` |
+
+**插件配置（agents / categories）：** 应用根据 `opencode.json` 中固定的插件版本选择文件。插件 ≥5（或未固定版本）时读写 `~/.omo/omo.jsonc`，不存在则用 `omo.json`；旧文件只会被插件自带的迁移导入一次。插件 <5 时按插件自身的查找顺序：`oh-my-opencode.jsonc`、`oh-my-opencode.json`、`oh-my-openagent.jsonc`、`oh-my-openagent.json`。修改为就地编辑，JSONC 注释会保留。快照包含上述所有存在的文件以及 `opencode.json[c]`。
