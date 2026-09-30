@@ -1,10 +1,108 @@
 use std::collections::HashMap;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
-fn config_dir() -> PathBuf {
+pub(crate) fn config_dir() -> PathBuf {
     let home = dirs::home_dir().expect("无法获取 home 目录");
     home.join(".config").join("opencode")
+}
+
+/// 插件 5.x 的统一配置目录 ~/.omo
+pub(crate) fn omo_dir() -> PathBuf {
+    let home = dirs::home_dir().expect("无法获取 home 目录");
+    home.join(".omo")
+}
+
+/// 插件从该主版本起只读取 ~/.omo/omo.jsonc，旧文件仅供一次性迁移
+const UNIFIED_CONFIG_MAJOR: u32 = 5;
+
+/// unified 布局候选文件，按插件读取优先级排列
+pub(crate) fn unified_config_candidates() -> Vec<PathBuf> {
+    let dir = omo_dir();
+    vec![dir.join("omo.jsonc"), dir.join("omo.json")]
+}
+
+/// legacy 布局候选文件，按插件 3.x/4.x 读取优先级排列（旧名优先，jsonc 优先）
+pub(crate) fn legacy_config_candidates() -> Vec<PathBuf> {
+    let dir = config_dir();
+    ["oh-my-opencode", "oh-my-openagent"]
+        .iter()
+        .flat_map(|base| [format!("{}.jsonc", base), format!("{}.json", base)])
+        .map(|name| dir.join(name))
+        .collect()
+}
+
+#[derive(serde::Serialize)]
+pub struct PluginConfigLocation {
+    path: String,
+    layout: &'static str,
+    exists: bool,
+}
+
+fn location(path: &Path, layout: &'static str) -> PluginConfigLocation {
+    PluginConfigLocation {
+        path: path.to_string_lossy().into_owned(),
+        layout,
+        exists: path.exists(),
+    }
+}
+
+/// 根据 opencode.json 中固定的插件主版本，定位插件实际读取的配置文件
+/// plugin_major 为 None（未固定版本，即 latest）时按最新版处理
+#[tauri::command]
+pub fn resolve_plugin_config(plugin_major: Option<u32>) -> PluginConfigLocation {
+    resolve_among(
+        plugin_major,
+        &legacy_config_candidates(),
+        &unified_config_candidates(),
+    )
+}
+
+fn resolve_among(
+    plugin_major: Option<u32>,
+    legacy: &[PathBuf],
+    unified: &[PathBuf],
+) -> PluginConfigLocation {
+    // legacy 默认新建 oh-my-opencode.json（候选第 2 项），unified 默认新建 omo.jsonc
+    let (candidates, default, layout) = if plugin_major.is_some_and(|m| m < UNIFIED_CONFIG_MAJOR) {
+        (legacy, &legacy[1], "legacy")
+    } else {
+        (unified, &unified[0], "unified")
+    };
+    let path = candidates.iter().find(|p| p.exists()).unwrap_or(default);
+    location(path, layout)
+}
+
+/// 只允许读写插件配置候选路径，避免前端传入任意路径
+fn check_plugin_config_path(path: &str) -> Result<PathBuf, String> {
+    let path = PathBuf::from(path);
+    let allowed = unified_config_candidates()
+        .into_iter()
+        .chain(legacy_config_candidates())
+        .any(|p| p == path);
+    if allowed {
+        Ok(path)
+    } else {
+        Err(format!("不允许访问的插件配置路径: {}", path.display()))
+    }
+}
+
+#[tauri::command]
+pub fn read_plugin_config(path: &str) -> Result<String, String> {
+    let path = check_plugin_config_path(path)?;
+    if !path.exists() {
+        return Ok(String::new());
+    }
+    fs::read_to_string(&path).map_err(|e| format!("读取 {} 失败: {}", path.display(), e))
+}
+
+#[tauri::command]
+pub fn write_plugin_config(path: &str, content: &str) -> Result<(), String> {
+    let path = check_plugin_config_path(path)?;
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent).map_err(|e| format!("创建 {} 失败: {}", parent.display(), e))?;
+    }
+    fs::write(&path, content).map_err(|e| format!("写入 {} 失败: {}", path.display(), e))
 }
 
 fn auth_file() -> PathBuf {
@@ -112,4 +210,74 @@ pub async fn fetch_models_dev(provider_ids: Vec<String>) -> Result<String, Strin
     }
 
     serde_json::to_string(&result).map_err(|e| e.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct Fixture {
+        root: PathBuf,
+        legacy: Vec<PathBuf>,
+        unified: Vec<PathBuf>,
+    }
+
+    impl Fixture {
+        fn new(name: &str) -> Self {
+            let root = std::env::temp_dir().join(format!("omo-cfg-test-{}-{}", name, std::process::id()));
+            let _ = fs::remove_dir_all(&root);
+            fs::create_dir_all(&root).unwrap();
+            let legacy = ["oh-my-opencode.jsonc", "oh-my-opencode.json", "oh-my-openagent.jsonc", "oh-my-openagent.json"]
+                .iter()
+                .map(|n| root.join(n))
+                .collect();
+            let unified = vec![root.join("omo.jsonc"), root.join("omo.json")];
+            Fixture { root, legacy, unified }
+        }
+
+        fn touch(&self, name: &str) {
+            fs::write(self.root.join(name), "{}").unwrap();
+        }
+
+        fn resolve(&self, major: Option<u32>) -> PluginConfigLocation {
+            resolve_among(major, &self.legacy, &self.unified)
+        }
+    }
+
+    impl Drop for Fixture {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.root);
+        }
+    }
+
+    #[test]
+    fn legacy_plugin_prefers_old_basename_like_plugin_3x() {
+        let f = Fixture::new("legacy-order");
+        f.touch("oh-my-opencode.json");
+        f.touch("oh-my-openagent.jsonc");
+        let loc = f.resolve(Some(3));
+        assert_eq!(loc.layout, "legacy");
+        assert!(loc.path.ends_with("oh-my-opencode.json"));
+        assert!(loc.exists);
+    }
+
+    #[test]
+    fn unified_plugin_ignores_legacy_files() {
+        let f = Fixture::new("unified-new");
+        f.touch("oh-my-opencode.json");
+        let loc = f.resolve(Some(5));
+        assert_eq!(loc.layout, "unified");
+        assert!(loc.path.ends_with("omo.jsonc"));
+        assert!(!loc.exists);
+    }
+
+    #[test]
+    fn unpinned_plugin_uses_existing_omo_json() {
+        let f = Fixture::new("unified-json");
+        f.touch("omo.json");
+        let loc = f.resolve(None);
+        assert_eq!(loc.layout, "unified");
+        assert!(loc.path.ends_with("omo.json"));
+        assert!(loc.exists);
+    }
 }

@@ -21,13 +21,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useConfig } from "@/context/ConfigContext";
-import { getRecommendation } from "@/lib/recommended-models";
+import {
+  getRecommendation,
+  isRecommendedChoice,
+  recommendedModelFor,
+} from "@/lib/recommended-models";
+import { reasoningOptions } from "@/lib/config";
 import { ModelSelect } from "@/components/shared/ModelSelect";
 
-const VARIANTS = ["__none", "medium", "high", "xhigh", "max"];
-
 export function CategoryTable() {
-  const { ohMyOpenCodeConfig, updateCategory } = useConfig();
+  const { ohMyOpenCodeConfig, pluginConfigLocation, updateCategory } = useConfig();
+  const layout = pluginConfigLocation?.layout;
   const { t } = useTranslation(["common", "agents"]);
 
   const categories = ohMyOpenCodeConfig?.categories ?? {};
@@ -42,16 +46,18 @@ export function CategoryTable() {
           <TableRow>
             <TableHead className="w-[180px]">{t("common:table.name")}</TableHead>
             <TableHead>{t("common:table.model")}</TableHead>
-            <TableHead className="w-[120px]">{t("common:table.variant")}</TableHead>
+            <TableHead className="w-[120px]">{t(layout === "unified" ? "common:table.reasoning" : "common:table.variant")}</TableHead>
             <TableHead className="w-[60px]">{t("common:table.recommend")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {Object.entries(categories).map(([name, cat]) => {
             const rec = getRecommendation("category", name);
-            const isRecommended =
-              rec?.model === cat.model &&
-              (rec?.variant ?? "") === (cat.variant ?? "");
+            const isRecommended = isRecommendedChoice(
+              rec,
+              cat.model,
+              cat.variant,
+            );
 
             return (
               <TableRow key={name}>
@@ -79,7 +85,7 @@ export function CategoryTable() {
                       <SelectValue placeholder="-" />
                     </SelectTrigger>
                     <SelectContent>
-                      {VARIANTS.map((v) => (
+                      {reasoningOptions(layout, cat.variant).map((v) => (
                         <SelectItem key={v} value={v}>
                           {v === "__none" ? "-" : v}
                         </SelectItem>
@@ -96,7 +102,7 @@ export function CategoryTable() {
                           onClick={() => {
                             if (rec && !isRecommended) {
                               updateCategory(name, {
-                                model: rec.model,
+                                model: recommendedModelFor(rec, cat.model),
                                 variant: rec.variant,
                               });
                             }

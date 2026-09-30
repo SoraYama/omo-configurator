@@ -10,7 +10,9 @@
     "pluginVersionTitle": "npm 包 oh-my-openagent 的版本",
     "connectedProviders": "已连接: {{names}}",
     "externalModelsLoading": "加载外部模型...",
-    "externalModelsLoaded": "{{count}} 个外部模型"
+    "externalModelsLoaded": "{{count}} 个外部模型",
+    "pluginConfigTitle": "插件配置文件：{{path}}",
+    "pluginConfigNew": "将新建"
   },
   "actions": {
     "save": "保存",
@@ -34,6 +36,7 @@
     "name": "名称",
     "model": "模型",
     "variant": "Variant",
+    "reasoning": "推理强度",
     "recommend": "推荐"
   },
   "select": {

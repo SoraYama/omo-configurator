@@ -11,11 +11,11 @@ import {
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { ModelSelect } from "@/components/shared/ModelSelect";
 import { useConfig } from "@/context/ConfigContext";
-
-const VARIANTS = ["__none", "medium", "high", "xhigh", "max"];
+import { reasoningOptions } from "@/lib/config";
 
 export function BatchModelBar() {
-  const { ohMyOpenCodeConfig, batchReplaceModel } = useConfig();
+  const { ohMyOpenCodeConfig, pluginConfigLocation, batchReplaceModel } =
+    useConfig();
   const { t } = useTranslation(["common", "agents"]);
   const [fromModel, setFromModel] = useState("");
   const [toModel, setToModel] = useState("");
@@ -83,10 +83,16 @@ export function BatchModelBar() {
 
       <Select value={toVariant} onValueChange={setToVariant}>
         <SelectTrigger className="w-[100px]">
-          <SelectValue placeholder="Variant" />
+          <SelectValue
+            placeholder={t(
+              pluginConfigLocation?.layout === "unified"
+                ? "common:table.reasoning"
+                : "common:table.variant",
+            )}
+          />
         </SelectTrigger>
         <SelectContent>
-          {VARIANTS.map((v) => (
+          {reasoningOptions(pluginConfigLocation?.layout).map((v) => (
             <SelectItem key={v} value={v}>
               {v === "__none" ? "-" : v}
             </SelectItem>

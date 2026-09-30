@@ -10,7 +10,9 @@
     "pluginVersionTitle": "npm package oh-my-openagent version",
     "connectedProviders": "Connected: {{names}}",
     "externalModelsLoading": "Loading external models...",
-    "externalModelsLoaded": "{{count}} external models"
+    "externalModelsLoaded": "{{count}} external models",
+    "pluginConfigTitle": "Plugin config file: {{path}}",
+    "pluginConfigNew": "will be created"
   },
   "actions": {
     "save": "Save",
@@ -34,6 +36,7 @@
     "name": "Name",
     "model": "Model",
     "variant": "Variant",
+    "reasoning": "Reasoning",
     "recommend": "Rec."
   },
   "select": {

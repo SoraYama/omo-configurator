@@ -1,10 +1,10 @@
-/** oh-my-opencode.json 中的 agent 配置 */
+/** 插件配置中的 agent 配置（variant 在 unified 布局下对应 reasoning 字段） */
 export interface AgentConfig {
   model: string;
   variant?: string;
 }
 
-/** oh-my-opencode.json 中的 category 配置 */
+/** 插件配置中的 category 配置（variant 在 unified 布局下对应 reasoning 字段） */
 export interface CategoryConfig {
   model: string;
   variant?: string;
@@ -15,7 +15,7 @@ export interface ClaudeCodeSettings {
   [key: string]: unknown;
 }
 
-/** oh-my-opencode.json 完整结构 */
+/** 插件配置中 OpenCode 生效的 agents / categories 视图 */
 export interface OhMyOpenCodeConfig {
   agents?: Record<string, AgentConfig>;
   categories?: Record<string, CategoryConfig>;
@@ -104,7 +104,24 @@ export type ConfigFileType = "opencode" | "oh-my-opencode";
 
 /** 推荐模型条目 */
 export interface RecommendedModel {
+  /** "provider/modelId"，provider 取 providers 中的第一个 */
   model: string;
   variant?: string;
+  /** 可提供该模型的 provider 列表；为空时只按完整 model 字符串匹配 */
+  providers?: string[];
   fallbacks: Array<{ model: string; variant?: string }>;
+}
+
+/**
+ * 插件配置文件布局
+ * - unified：插件 ≥5 读取的 ~/.omo/omo.jsonc，OpenCode 专属设置位于 "[opencode]" 块，推理强度字段为 reasoning
+ * - legacy：插件 <5 读取的 ~/.config/opencode/oh-my-open(code|agent).json[c]，推理强度字段为 variant
+ */
+export type PluginConfigLayout = "unified" | "legacy";
+
+/** Rust 侧 resolve_plugin_config 的返回值 */
+export interface PluginConfigLocation {
+  path: string;
+  layout: PluginConfigLayout;
+  exists: boolean;
 }

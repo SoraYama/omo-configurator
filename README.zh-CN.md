@@ -1,6 +1,6 @@
 # OmO Configurator
 
-桌面 GUI 工具，用于可视化编辑 `opencode.json` 和 `oh-my-opencode.json` 配置文件。
+桌面 GUI 工具，用于可视化编辑 OpenCode 的 `opencode.json` 与 oh-my-openagent 插件配置（`~/.omo/omo.jsonc`；插件 <5 时为旧版 `oh-my-opencode.json`）。
 
 **English:** [README.md](README.md)
 
@@ -69,13 +69,14 @@ tnpm run tauri build
 - 导出快照为 JSON 文件
 
 ### 版本检查
-- 顶栏显示当前 oh-my-opencode 插件版本
-- 一键检查 npm 最新版本，有更新时可一键升级配置中的版本号
+- 顶栏显示当前 oh-my-openagent 插件版本，以及正在编辑的插件配置文件
+- 一键检查 npm 最新版本，有更新时可一键升级配置中的版本号。从 <5 升级时会先把 agents 与 categories 写入 `~/.omo/omo.jsonc`，因为插件自带的 5.x 迁移会丢弃它们
 
 ## 配置文件位置
 
 | 文件 | 路径 |
 |------|------|
-| opencode.json | `~/.config/opencode/opencode.json` |
-| oh-my-opencode.json | `~/.config/opencode/oh-my-opencode.json` |
+| opencode.json | 优先 `~/.config/opencode/opencode.jsonc`，否则 `opencode.json` |
+| 插件配置（插件 ≥5 或未固定版本） | `~/.omo/omo.jsonc`（设置位于 `"[opencode]"` 块，使用 `reasoning` 代替 `variant`） |
+| 插件配置（插件 <5） | `~/.config/opencode/oh-my-opencode.json[c]`，否则 `oh-my-openagent.json[c]` |
 | 快照目录 | `~/.config/opencode/.snapshots/` |

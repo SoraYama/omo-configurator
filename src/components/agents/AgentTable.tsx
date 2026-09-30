@@ -21,13 +21,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useConfig } from "@/context/ConfigContext";
-import { getRecommendation } from "@/lib/recommended-models";
+import {
+  getRecommendation,
+  isRecommendedChoice,
+  recommendedModelFor,
+} from "@/lib/recommended-models";
+import { reasoningOptions } from "@/lib/config";
 import { ModelSelect } from "@/components/shared/ModelSelect";
 
-const VARIANTS = ["__none", "medium", "high", "xhigh", "max"];
-
 export function AgentTable() {
-  const { ohMyOpenCodeConfig, updateAgent } = useConfig();
+  const { ohMyOpenCodeConfig, pluginConfigLocation, updateAgent } = useConfig();
+  const layout = pluginConfigLocation?.layout;
   const { t } = useTranslation(["common", "agents"]);
 
   const agents = ohMyOpenCodeConfig?.agents ?? {};
@@ -42,16 +46,18 @@ export function AgentTable() {
           <TableRow>
             <TableHead className="w-[180px]">{t("common:table.name")}</TableHead>
             <TableHead>{t("common:table.model")}</TableHead>
-            <TableHead className="w-[120px]">{t("common:table.variant")}</TableHead>
+            <TableHead className="w-[120px]">{t(layout === "unified" ? "common:table.reasoning" : "common:table.variant")}</TableHead>
             <TableHead className="w-[60px]">{t("common:table.recommend")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {Object.entries(agents).map(([name, agent]) => {
             const rec = getRecommendation("agent", name);
-            const isRecommended =
-              rec?.model === agent.model &&
-              (rec?.variant ?? "") === (agent.variant ?? "");
+            const isRecommended = isRecommendedChoice(
+              rec,
+              agent.model,
+              agent.variant,
+            );
 
             return (
               <TableRow key={name}>
@@ -79,7 +85,7 @@ export function AgentTable() {
                       <SelectValue placeholder="-" />
                     </SelectTrigger>
                     <SelectContent>
-                      {VARIANTS.map((v) => (
+                      {reasoningOptions(layout, agent.variant).map((v) => (
                         <SelectItem key={v} value={v}>
                           {v === "__none" ? "-" : v}
                         </SelectItem>
@@ -96,7 +102,7 @@ export function AgentTable() {
                           onClick={() => {
                             if (rec && !isRecommended) {
                               updateAgent(name, {
-                                model: rec.model,
+                                model: recommendedModelFor(rec, agent.model),
                                 variant: rec.variant,
                               });
                             }

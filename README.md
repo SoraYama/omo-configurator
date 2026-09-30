@@ -1,6 +1,6 @@
 # OmO Configurator
 
-A desktop GUI for visually editing `opencode.json` and `oh-my-opencode.json`.
+A desktop GUI for visually editing OpenCode's `opencode.json` and the oh-my-openagent plugin config (`~/.omo/omo.jsonc`, or the legacy `oh-my-opencode.json` for plugin < 5).
 
 **Other languages:** [简体中文](README.zh-CN.md)
 
@@ -75,13 +75,14 @@ tnpm run tauri build
 
 ### Version check
 
-- Top bar shows the current oh-my-opencode plugin version
-- One-click check for the latest npm version; when an update exists, bump the version in config in one step
+- Top bar shows the current oh-my-openagent plugin version and which plugin config file is being edited
+- One-click check for the latest npm version; when an update exists, bump the version in config in one step. Upgrading from < 5 copies your agents and categories into `~/.omo/omo.jsonc` first, because the plugin's own 5.x migration drops them
 
 ## Config file locations
 
 | File | Path |
 |------|------|
-| opencode.json | `~/.config/opencode/opencode.json` |
-| oh-my-opencode.json | `~/.config/opencode/oh-my-opencode.json` |
+| opencode.json | `~/.config/opencode/opencode.jsonc`, else `opencode.json` |
+| Plugin config (plugin ≥ 5, or unpinned) | `~/.omo/omo.jsonc` (settings in the `"[opencode]"` block, `reasoning` instead of `variant`) |
+| Plugin config (plugin < 5) | `~/.config/opencode/oh-my-opencode.json[c]`, else `oh-my-openagent.json[c]` |
 | Snapshots | `~/.config/opencode/.snapshots/` |

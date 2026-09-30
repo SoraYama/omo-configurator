@@ -2,6 +2,8 @@ use std::fs;
 use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
 
+use crate::commands::{config_dir, legacy_config_candidates, unified_config_candidates};
+
 fn snapshots_dir() -> PathBuf {
     let home = dirs::home_dir().expect("无法获取 home 目录");
     home.join(".config").join("opencode").join(".snapshots")
@@ -22,6 +24,22 @@ fn validate_snapshot_name(name: &str) -> Result<String, String> {
         return Err("无效的快照名称".to_string());
     }
     Ok(trimmed.to_string())
+}
+
+/// 快照覆盖的配置文件：(快照内文件名, 实际路径)
+/// 各文件名互不重复，因此快照目录保持扁平结构，兼容旧快照
+fn snapshot_files() -> Vec<(String, PathBuf)> {
+    let opencode = ["opencode.json", "opencode.jsonc"]
+        .iter()
+        .map(|name| config_dir().join(name));
+    opencode
+        .chain(legacy_config_candidates())
+        .chain(unified_config_candidates())
+        .filter_map(|path| {
+            let name = path.file_name()?.to_str()?.to_string();
+            Some((name, path))
+        })
+        .collect()
 }
 
 #[derive(Serialize, Deserialize)]
@@ -61,17 +79,12 @@ pub fn list_snapshots() -> Result<Vec<SnapshotInfo>, String> {
 
 #[tauri::command]
 pub fn save_snapshot(name: &str) -> Result<(), String> {
-    let config_dir = dirs::home_dir()
-        .expect("无法获取 home 目录")
-        .join(".config")
-        .join("opencode");
     let snap_dir = snapshots_dir().join(name);
     fs::create_dir_all(&snap_dir).map_err(|e| format!("创建快照目录失败: {}", e))?;
 
-    for filename in &["opencode.json", "oh-my-opencode.json"] {
-        let src = config_dir.join(filename);
+    for (filename, src) in snapshot_files() {
         if src.exists() {
-            let dst = snap_dir.join(filename);
+            let dst = snap_dir.join(&filename);
             fs::copy(&src, &dst).map_err(|e| format!("复制 {} 失败: {}", filename, e))?;
         }
     }
@@ -80,18 +93,17 @@ pub fn save_snapshot(name: &str) -> Result<(), String> {
 
 #[tauri::command]
 pub fn restore_snapshot(name: &str) -> Result<(), String> {
-    let config_dir = dirs::home_dir()
-        .expect("无法获取 home 目录")
-        .join(".config")
-        .join("opencode");
     let snap_dir = snapshots_dir().join(name);
     if !snap_dir.exists() {
         return Err(format!("快照 {} 不存在", name));
     }
-    for filename in &["opencode.json", "oh-my-opencode.json"] {
-        let src = snap_dir.join(filename);
+    for (filename, dst) in snapshot_files() {
+        let src = snap_dir.join(&filename);
         if src.exists() {
-            let dst = config_dir.join(filename);
+            if let Some(parent) = dst.parent() {
+                fs::create_dir_all(parent)
+                    .map_err(|e| format!("创建 {} 失败: {}", parent.display(), e))?;
+            }
             fs::copy(&src, &dst).map_err(|e| format!("恢复 {} 失败: {}", filename, e))?;
         }
     }
@@ -134,13 +146,13 @@ pub fn export_snapshot(name: &str) -> Result<String, String> {
         return Err(format!("快照 {} 不存在", name));
     }
     let mut export_data = serde_json::Map::new();
-    for filename in &["opencode.json", "oh-my-opencode.json"] {
-        let path = snap_dir.join(filename);
+    for (filename, _) in snapshot_files() {
+        let path = snap_dir.join(&filename);
         if path.exists() {
             let content = fs::read_to_string(&path)
                 .map_err(|e| format!("读取 {} 失败: {}", filename, e))?;
             export_data.insert(
-                filename.to_string(),
+                filename,
                 serde_json::Value::String(content),
             );
         }
