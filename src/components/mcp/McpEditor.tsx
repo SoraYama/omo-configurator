@@ -83,6 +83,26 @@ export function McpEditor({ name, server, onSave }: McpEditorProps) {
   const { t } = useTranslation(["mcp", "common"]);
   const [draft, setDraft] = useState<McpServer>({ ...server });
 
+  if (draft.type === undefined) {
+    return (
+      <div className="space-y-4 p-4 border rounded-md bg-background">
+        <p className="text-xs text-muted-foreground">
+          {t("mcp:editor.overrideHint")}
+        </p>
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={draft.enabled}
+            onCheckedChange={(enabled) => setDraft({ enabled })}
+          />
+          <Label>{t("mcp:editor.enabledLabel")}</Label>
+        </div>
+        <Button size="sm" onClick={() => onSave(name, draft)}>
+          {t("common:actions.save")}
+        </Button>
+      </div>
+    );
+  }
+
   if (draft.type === "remote") {
     const remote = draft as McpServerRemote;
     return (

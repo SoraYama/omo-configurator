@@ -4,7 +4,8 @@
   "empty": "暂无 MCP 服务器配置",
   "status": {
     "enabled": "启用",
-    "disabled": "禁用"
+    "disabled": "禁用",
+    "override": "仅覆盖"
   },
   "addForm": {
     "namePlaceholder": "服务器名称",
@@ -18,7 +19,8 @@
     "enabledLabel": "启用",
     "commandHint": "用空格分隔命令和参数",
     "commandPlaceholder": "例如: node server.js",
-    "envVarsLabel": "环境变量"
+    "envVarsLabel": "环境变量",
+    "overrideHint": "此条目只覆盖启用状态，服务器本身定义在其它配置文件中（如全局或项目配置）。"
   },
   "dialogs": {
     "delete": {

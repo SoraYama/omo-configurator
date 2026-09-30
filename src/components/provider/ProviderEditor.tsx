@@ -43,7 +43,8 @@ export function ProviderEditor({ name, provider }: ProviderEditorProps) {
   const updateModelName = (id: string, displayName: string) => {
     save({
       ...draft,
-      models: { ...draft.models, [id]: { name: displayName } },
+      // 只改显示名，保留 limit / cost / options / variants 等其它字段
+      models: { ...draft.models, [id]: { ...draft.models?.[id], name: displayName } },
     });
   };
 
@@ -146,7 +147,7 @@ export function ProviderEditor({ name, provider }: ProviderEditorProps) {
                 </TableCell>
                 <TableCell>
                   <Input
-                    value={entry.name}
+                    value={entry.name ?? ""}
                     onChange={(e) => updateModelName(id, e.target.value)}
                     placeholder="Model Display Name"
                   />

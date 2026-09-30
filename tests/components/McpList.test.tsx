@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),
@@ -19,6 +19,7 @@ vi.mock("@/context/ConfigContext", () => ({
           command: ["node", "server.js"],
           environment: { PORT: "3000" },
         },
+        "inherited": { enabled: false },
       },
     },
     updateMcpServer: vi.fn(),
@@ -39,5 +40,12 @@ describe("McpList", () => {
     render(<McpList />);
     expect(screen.getByText("remote")).toBeInTheDocument();
     expect(screen.getByText("local")).toBeInTheDocument();
+  });
+
+  it("只覆盖启用状态的条目可以渲染和展开", () => {
+    render(<McpList />);
+    expect(screen.getByText("仅覆盖")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("inherited"));
+    expect(screen.getByText(/只覆盖启用状态/)).toBeInTheDocument();
   });
 });

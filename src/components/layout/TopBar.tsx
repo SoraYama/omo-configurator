@@ -10,6 +10,7 @@ import { getOhMyOpenCodeVersion } from "@/lib/config";
 export function TopBar() {
   const {
     openCodeConfig,
+    pluginConfigLocation,
     updatePluginVersion,
     externalModels,
     authConfig,
@@ -62,13 +63,21 @@ export function TopBar() {
             oh-my-openagent v{currentVersion}
           </Badge>
         )}
+        {pluginConfigLocation && (
+          <Badge
+            variant="outline"
+            className="font-mono text-xs"
+            title={t("app.pluginConfigTitle", { path: pluginConfigLocation.path })}
+          >
+            {pluginConfigLocation.path.split(/[\\/]/).pop()}
+            {!pluginConfigLocation.exists && ` (${t("app.pluginConfigNew")})`}
+          </Badge>
+        )}
         {hasUpdate && (
           <Badge
             variant="outline"
             className="cursor-pointer text-orange-600 border-orange-300"
-            onClick={() =>
-              updatePluginVersion("oh-my-openagent", latestVersion!)
-            }
+            onClick={() => void updatePluginVersion(latestVersion!)}
           >
             {t("app.updateAvailable", { version: latestVersion })}
           </Badge>
