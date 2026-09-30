@@ -22,11 +22,24 @@ export interface OhMyOpenCodeConfig {
   claude_code?: ClaudeCodeSettings;
 }
 
+/** 远程 MCP 服务器的 OAuth 配置 */
+export interface McpOAuthConfig {
+  clientId?: string;
+  clientSecret?: string;
+  scope?: string;
+  callbackPort?: number;
+  redirectUri?: string;
+}
+
 /** opencode.json 中的 MCP 服务器（远程） */
 export interface McpServerRemote {
   type: "remote";
   url: string;
   headers?: Record<string, string>;
+  /** false 表示关闭 OAuth 自动探测 */
+  oauth?: McpOAuthConfig | false;
+  /** 请求超时（毫秒），默认 5000 */
+  timeout?: number;
   enabled?: boolean;
 }
 
@@ -34,34 +47,51 @@ export interface McpServerRemote {
 export interface McpServerLocal {
   type: "local";
   command: string[];
+  cwd?: string;
   environment?: Record<string, string>;
+  timeout?: number;
   enabled?: boolean;
 }
 
-export type McpServer = McpServerRemote | McpServerLocal;
+/** 只覆盖启用状态的条目，例如在项目配置中禁用全局定义的 server */
+export interface McpServerToggle {
+  type?: undefined;
+  enabled: boolean;
+}
+
+export type McpServer = McpServerRemote | McpServerLocal | McpServerToggle;
 
 /** opencode.json 中 provider 的 options */
 export interface ProviderOptions {
   baseURL?: string;
   apiKey?: string;
+  [key: string]: unknown;
 }
 
-/** opencode.json 中 provider 的单个模型 */
+/** opencode.json 中 provider 的单个模型（limit、cost、options、variants 等字段原样保留） */
 export interface ProviderModelEntry {
-  name: string;
+  name?: string;
+  [key: string]: unknown;
 }
 
 /** opencode.json 中的 Provider */
 export interface Provider {
   name?: string;
   npm?: string;
+  env?: string[];
+  whitelist?: string[];
+  blacklist?: string[];
   options?: ProviderOptions;
   models?: Record<string, ProviderModelEntry>;
+  [key: string]: unknown;
 }
 
 /** opencode.json 完整结构（字段名以实际文件为准） */
+/** plugin 条目：包名字符串，或 [包名, 插件选项] 元组 */
+export type PluginEntry = string | [string, Record<string, unknown>];
+
 export interface OpenCodeConfig {
-  plugin?: string[];
+  plugin?: PluginEntry[];
   mcp?: Record<string, McpServer>;
   provider?: Record<string, Provider>;
   [key: string]: unknown;

@@ -4,7 +4,8 @@
   "empty": "No MCP servers configured",
   "status": {
     "enabled": "Enabled",
-    "disabled": "Disabled"
+    "disabled": "Disabled",
+    "override": "override"
   },
   "addForm": {
     "namePlaceholder": "Server name",
@@ -18,7 +19,8 @@
     "enabledLabel": "Enabled",
     "commandHint": "Separate command and arguments with spaces",
     "commandPlaceholder": "e.g. node server.js",
-    "envVarsLabel": "Environment Variables"
+    "envVarsLabel": "Environment Variables",
+    "overrideHint": "Only overrides whether this server is enabled; it is defined in another config file (e.g. a global or project config)."
   },
   "dialogs": {
     "delete": {

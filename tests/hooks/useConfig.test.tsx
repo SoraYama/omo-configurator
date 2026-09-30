@@ -159,4 +159,25 @@ describe("useConfig", () => {
     expect(result.current.pluginConfigLocation?.layout).toBe("unified");
     expect(result.current.ohMyOpenCodeConfig?.agents?.sisyphus.variant).toBe("max");
   });
+
+  it("升级元组写法的插件条目时保留插件选项", async () => {
+    const files: Record<string, string> = {
+      "opencode/opencode.json": JSON.stringify({
+        plugin: [["oh-my-openagent@5.0.0", { debug: true }], "other@1.0.0"],
+      }),
+    };
+    mockBackend(files);
+
+    const { result } = renderHook(() => useConfig(), { wrapper });
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await act(async () => {
+      await result.current.updatePluginVersion("5.1.4");
+    });
+
+    expect(parseJsonc<{ plugin: unknown[] }>(files["opencode/opencode.json"]).plugin).toEqual([
+      ["oh-my-openagent@5.1.4", { debug: true }],
+      "other@1.0.0",
+    ]);
+  });
 });

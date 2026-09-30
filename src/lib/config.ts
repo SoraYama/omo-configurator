@@ -277,8 +277,16 @@ export function buildModelList(
 const OMO_PLUGIN_PATTERN =
   /^(?:npm:)?(?:@code-yeongyu\/)?oh-my-open(?:agent|code)(?:@(.+))?$/;
 
-export function isOmoPluginEntry(entry: unknown): entry is string {
-  return typeof entry === "string" && OMO_PLUGIN_PATTERN.test(entry);
+/** plugin 条目的包名部分（兼容 [包名, 选项] 元组写法） */
+export function pluginEntryName(entry: unknown): string | undefined {
+  if (typeof entry === "string") return entry;
+  if (Array.isArray(entry) && typeof entry[0] === "string") return entry[0];
+  return undefined;
+}
+
+export function isOmoPluginEntry(entry: unknown): boolean {
+  const name = pluginEntryName(entry);
+  return name !== undefined && OMO_PLUGIN_PATTERN.test(name);
 }
 
 /**
@@ -289,10 +297,8 @@ export function getOhMyOpenCodeVersion(
   config: OpenCodeConfig,
 ): string | undefined {
   for (const p of config.plugin ?? []) {
-    if (isOmoPluginEntry(p)) {
-      const version = p.match(OMO_PLUGIN_PATTERN)?.[1];
-      if (version) return version;
-    }
+    const version = pluginEntryName(p)?.match(OMO_PLUGIN_PATTERN)?.[1];
+    if (version) return version;
   }
   return undefined;
 }

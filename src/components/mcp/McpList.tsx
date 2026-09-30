@@ -92,7 +92,9 @@ export function McpList() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-mono">{name}</CardTitle>
               <div className="flex items-center gap-2">
-                <Badge variant="outline">{server.type}</Badge>
+                <Badge variant="outline">
+                  {server.type ?? t("status.override")}
+                </Badge>
                 <Badge
                   variant={
                     server.enabled !== false ? "default" : "secondary"

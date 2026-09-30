@@ -296,10 +296,9 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
       if (!oc?.plugin) return;
       const index = oc.plugin.findIndex(isOmoPluginEntry);
       if (index < 0) return;
-      // 插件已改名为 oh-my-openagent，升级时顺带替换旧包名
-      await editOpenCode([
-        { path: ["plugin", index], value: `oh-my-openagent@${newVersion}` },
-      ]);
+      // 插件已改名为 oh-my-openagent，升级时顺带替换旧包名；元组写法只改包名、保留选项
+      const path = Array.isArray(oc.plugin[index]) ? ["plugin", index, 0] : ["plugin", index];
+      await editOpenCode([{ path, value: `oh-my-openagent@${newVersion}` }]);
 
       // 跨越到 unified 布局时，插件迁移会丢弃旧文件中的 agents / categories，
       // 在插件首次启动前先把它们写入 ~/.omo/omo.jsonc（迁移不会覆盖已有值）

@@ -199,6 +199,12 @@ describe("getOhMyOpenCodeVersion 兼容写法", () => {
   it("未固定版本时返回 undefined", () => {
     expect(getOhMyOpenCodeVersion({ plugin: ["oh-my-openagent"] })).toBeUndefined();
   });
+
+  it("支持 [包名, 选项] 元组写法", () => {
+    expect(
+      getOhMyOpenCodeVersion({ plugin: [["oh-my-openagent@5.1.4", { debug: true }]] }),
+    ).toBe("5.1.4");
+  });
 });
 
 describe("getPluginMajor", () => {
